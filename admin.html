@@ -14,7 +14,7 @@ header h2{margin:0;color:#20c99a}
 .card{background:#121d24;padding:20px;border-radius:12px;margin:16px 0}
 h1{font-size:25px}
 h3{color:#20c99a}
-input,textarea{width:100%;padding:13px;margin:7px 0;background:#080d12;border:1px solid #34434b;border-radius:7px;color:white}
+input,textarea,select{width:100%;padding:13px;margin:7px 0;background:#080d12;border:1px solid #34434b;border-radius:7px;color:white}
 textarea{min-height:85px;resize:vertical}
 button{background:#20c99a;color:#06120e;border:0;padding:11px 16px;border-radius:7px;font-weight:bold;margin:5px;cursor:pointer}
 button.danger{background:#e34d5b;color:white}
@@ -25,6 +25,10 @@ button.secondary{background:#34434b;color:white}
 #dashboard{display:none}
 #message{color:#ffb6b6;white-space:pre-wrap}
 #status{color:#20c99a}
+.preview{width:100%;max-height:260px;object-fit:contain;background:#080d12;border-radius:8px;margin-top:10px}
+.field-label{display:block;color:#20c99a;margin-top:12px;font-size:14px}
+.checkrow{display:flex;align-items:center;gap:10px;margin:12px 0}
+.checkrow input{width:auto;margin:0;accent-color:#20c99a}
 </style>
 </head>
 <body>
@@ -44,6 +48,41 @@ button.secondary{background:#34434b;color:white}
 <p class="note">Add, edit and delete your movie information.</p>
 <p id="status"></p>
 
+<!-- POPUP MANAGER -->
+<div class="card">
+<h1>Website Popup Manager 📢</h1>
+<p class="note">Add an image or video link. It will appear as a popup on the website.</p>
+
+<label class="field-label">Select Media Type</label>
+<select id="popupType">
+<option value="image">Image</option>
+<option value="video">Video</option>
+</select>
+
+<label class="field-label">Image / Video URL</label>
+<input id="popupMedia" type="url" placeholder="Paste image or video link">
+
+<label class="field-label">Destination URL</label>
+<input id="popupDestination" type="url" placeholder="Where should visitors go after clicking?">
+
+<div class="checkrow">
+<input type="checkbox" id="popupEnabled">
+<label for="popupEnabled">Enable Website Popup</label>
+</div>
+
+<div id="popupPreviewBox" style="display:none">
+<p class="note">Media Preview</p>
+<div id="popupPreview"></div>
+</div>
+
+<button id="previewPopupBtn" class="secondary">Preview Media</button>
+<button id="savePopupBtn">Save Popup Settings</button>
+<button id="disablePopupBtn" class="danger">Turn Popup OFF</button>
+
+<p id="popupStatus" class="note"></p>
+</div>
+
+<!-- MOVIE FORM -->
 <div class="card">
 <h3 id="formTitle">Add New Movie</h3>
 <input id="movieTitle" placeholder="Movie Name *">
@@ -104,9 +143,7 @@ let editingId = null;
 $("loginBtn").onclick = async () => {
  $("message").textContent = "Please wait...";
  try {
-  await signInWithEmailAndPassword(
-   auth,$("email").value.trim(),$("password").value
-  );
+  await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
   $("password").value = "";
  } catch(error) {
   $("message").textContent = "Login failed: " + error.message;
@@ -119,12 +156,134 @@ onAuthStateChanged(auth,async user => {
   $("dashboard").style.display = "block";
   $("message").textContent = "";
   await loadMovies();
+  await loadPopupSettings();
  } else {
   $("loginBox").style.display = "block";
   $("dashboard").style.display = "none";
   if(user) await signOut(auth);
  }
 });
+
+/* POPUP MANAGER */
+
+const popupRef = doc(db,"siteSettings","popup");
+
+function validUrl(value) {
+ try {
+  const url = new URL(value);
+  return url.protocol === "https:" || url.protocol === "http:";
+ } catch {
+  return false;
+ }
+}
+
+function showPopupPreview() {
+ const type = $("popupType").value;
+ const url = $("popupMedia").value.trim();
+
+ $("popupPreview").innerHTML = "";
+ $("popupPreviewBox").style.display = "none";
+
+ if(!validUrl(url)) {
+  $("popupStatus").textContent = "Please enter a valid image or video URL.";
+  return;
+ }
+
+ let media;
+
+ if(type === "video") {
+  media = document.createElement("video");
+  media.src = url;
+  media.controls = true;
+  media.muted = true;
+  media.playsInline = true;
+ } else {
+  media = document.createElement("img");
+  media.src = url;
+  media.alt = "Popup preview";
+ }
+
+ media.className = "preview";
+ $("popupPreview").appendChild(media);
+ $("popupPreviewBox").style.display = "block";
+ $("popupStatus").textContent = "Preview ready.";
+}
+
+$("previewPopupBtn").onclick = showPopupPreview;
+
+async function loadPopupSettings() {
+ try {
+  const snap = await getDoc(popupRef);
+
+  if(snap.exists()) {
+   const data = snap.data();
+   $("popupType").value = data.mediaType || "image";
+   $("popupMedia").value = data.mediaUrl || "";
+   $("popupDestination").value = data.destinationUrl || "";
+   $("popupEnabled").checked = data.enabled === true;
+   if(data.mediaUrl) showPopupPreview();
+   $("popupStatus").textContent = "Popup settings loaded.";
+  } else {
+   $("popupStatus").textContent = "No popup settings saved yet.";
+  }
+ } catch(error) {
+  $("popupStatus").textContent = "Could not load popup: " + error.message;
+ }
+}
+
+$("savePopupBtn").onclick = async () => {
+ if(!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
+  $("popupStatus").textContent = "Admin login required.";
+  return;
+ }
+
+ const mediaUrl = $("popupMedia").value.trim();
+ const destinationUrl = $("popupDestination").value.trim();
+
+ if(!validUrl(mediaUrl)) {
+  $("popupStatus").textContent = "Please enter a valid media URL.";
+  return;
+ }
+
+ if(destinationUrl && !validUrl(destinationUrl)) {
+  $("popupStatus").textContent = "Please enter a valid destination URL.";
+  return;
+ }
+
+ try {
+  $("popupStatus").textContent = "Saving popup settings...";
+
+  await setDoc(popupRef,{
+   mediaType: $("popupType").value,
+   mediaUrl,
+   destinationUrl,
+   enabled: $("popupEnabled").checked,
+   updatedAt: serverTimestamp()
+  },{merge:true});
+
+  $("popupStatus").textContent = "Popup settings saved successfully!";
+ } catch(error) {
+  $("popupStatus").textContent = "Error: " + error.message;
+ }
+};
+
+$("disablePopupBtn").onclick = async () => {
+ if(!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) return;
+
+ try {
+  await setDoc(popupRef,{
+   enabled:false,
+   updatedAt:serverTimestamp()
+  },{merge:true});
+
+  $("popupEnabled").checked = false;
+  $("popupStatus").textContent = "Popup turned OFF.";
+ } catch(error) {
+  $("popupStatus").textContent = "Error: " + error.message;
+ }
+};
+
+/* MOVIE MANAGEMENT */
 
 function makeId(text) {
  return text.toLowerCase().trim()
@@ -178,7 +337,6 @@ $("saveBtn").onclick = async () => {
 
  try {
   $("status").textContent = "Saving movie...";
-
   const oldMovie = await getDoc(movieRef);
 
   if(oldMovie.exists() && oldMovie.data().createdAt) {
@@ -188,11 +346,9 @@ $("saveBtn").onclick = async () => {
   }
 
   await setDoc(movieRef,data);
-
   $("status").textContent = "Movie saved successfully!";
   clearForm();
   await loadMovies();
-
  } catch(error) {
   $("status").textContent = "Error: " + error.message;
  }
@@ -239,7 +395,6 @@ async function loadMovies() {
    box.append(heading,details,edit,remove);
    list.appendChild(box);
   });
-
  } catch(error) {
   $("movieList").textContent = "Error: " + error.message;
  }
