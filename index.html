@@ -117,6 +117,78 @@ color:#929aaa;font-size:12px;line-height:1.8
 .movies{grid-template-columns:repeat(4,minmax(0,1fr))}
 .poster{height:290px}
 }
+
+/* WEBSITE POPUP */
+#sitePopup{
+display:none;
+position:fixed;
+right:18px;
+bottom:20px;
+width:min(340px,calc(100vw - 30px));
+background:#111b24;
+border:1px solid #20c99a;
+border-radius:13px;
+padding:10px;
+z-index:9999;
+box-shadow:0 12px 40px rgba(0,0,0,.65);
+}
+#sitePopup.show{display:block}
+.popup-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:8px;
+}
+.popup-title{
+color:#20d6a0;
+font-weight:bold;
+font-size:13px;
+}
+#popupClose{
+background:#26343e;
+color:white;
+border:0;
+border-radius:50%;
+width:30px;
+height:30px;
+font-size:19px;
+cursor:pointer;
+}
+#popupMediaLink{
+display:block;
+text-decoration:none;
+}
+#popupMedia{
+width:100%;
+max-height:230px;
+object-fit:contain;
+display:block;
+border-radius:8px;
+background:#05090d;
+}
+.popup-controls{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:8px;
+margin-top:8px;
+}
+.popup-controls button{
+border:0;
+border-radius:6px;
+padding:8px 12px;
+background:#20c99a;
+color:#06120e;
+font-weight:bold;
+cursor:pointer;
+}
+.popup-hint{
+color:#aab8bf;
+font-size:10px;
+}
+@media(max-width:480px){
+#sitePopup{right:10px;bottom:12px}
+}
 </style>
 </head>
 
@@ -244,6 +316,23 @@ Discover movies. Find official places to watch.<br>
 © 2026 FLIXSTREAM. All rights reserved.
 </footer>
 
+<!-- POPUP WINDOW -->
+<div id="sitePopup">
+ <div class="popup-top">
+  <span class="popup-title">FEATURED</span>
+  <button id="popupClose" aria-label="Close popup">×</button>
+ </div>
+
+ <a id="popupMediaLink" href="#" target="_blank" rel="noopener">
+  <img id="popupMedia" alt="Featured promotion">
+ </a>
+
+ <div class="popup-controls">
+  <span class="popup-hint" id="popupHint">Tap to visit</span>
+  <button id="popupSound" style="display:none">Unmute 🔊</button>
+ </div>
+</div>
+
 <script>
 let category="All";
 
@@ -251,7 +340,7 @@ function filterMovies(){
 const query=document.getElementById("search").value.trim().toLowerCase();
 let visible=0;
 
-document.querySelectorAll(".movie").forEach(movie=>{
+document.querySelectorAll("#movieList .movie").forEach(movie=>{
 const matchText=movie.innerText.toLowerCase().includes(query);
 const movieCategory=(movie.dataset.category || "").toLowerCase();
 const matchCategory=category==="All"||movieCategory.includes(category.toLowerCase());
@@ -285,7 +374,9 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-
 import {
 getFirestore,
 collection,
-getDocs
+getDocs,
+doc,
+getDoc
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -317,7 +408,102 @@ return url.protocol==="https:"||url.protocol==="http:"?url.href:"";
 }catch{
 return "";
 }
+
+/* LOAD WEBSITE POPUP */
+async function loadWebsitePopup(){
+const popup=document.getElementById("sitePopup");
+const mediaLink=document.getElementById("popupMediaLink");
+const hint=document.getElementById("popupHint");
+const soundButton=document.getElementById("popupSound");
+
+try{
+const popupSnap=await getDoc(doc(db,"siteSettings","popup"));
+
+if(!popupSnap.exists()) return;
+
+const data=popupSnap.data();
+
+if(data.enabled!==true) return;
+
+const mediaUrl=safeUrl(data.mediaUrl);
+const destination=safeUrl(data.destinationUrl);
+const type=data.mediaType;
+
+if(!mediaUrl || (type!=="image" && type!=="video")) return;
+
+const oldMedia=document.getElementById("popupMedia");
+const media= document.createElement(type==="video"?"video":"img");
+
+media.id="popupMedia";
+media.className=oldMedia.className;
+media.style.cssText=oldMedia.style.cssText;
+
+if(type==="video"){
+media.src=mediaUrl;
+media.autoplay=true;
+media.loop=true;
+media.playsInline=true;
+media.controls=true;
+media.muted=false;
+media.preload="metadata";
+
+soundButton.style.display="inline-block";
+soundButton.textContent="Mute 🔊";
+
+soundButton.onclick=async()=>{
+media.muted=!media.muted;
+soundButton.textContent=media.muted?"Unmute 🔊":"Mute 🔊";
+
+if(!media.muted){
+try{await media.play();}
+catch(error){media.muted=true;soundButton.textContent="Unmute 🔊";}
 }
+};
+
+media.addEventListener("volumechange",()=>{
+soundButton.textContent=media.muted?"Unmute 🔊":"Mute 🔊";
+});
+
+media.addEventListener("loadedmetadata",async()=>{
+try{
+await media.play();
+}catch(error){
+media.muted=true;
+soundButton.textContent="Unmute 🔊";
+try{await media.play();}catch(e){}
+}
+},{once:true});
+
+hint.textContent="Video promotion • Tap to visit";
+
+}else{
+media.src=mediaUrl;
+media.alt="Featured promotion";
+media.loading="eager";
+soundButton.style.display="none";
+hint.textContent="Tap image to visit";
+}
+
+oldMedia.replaceWith(media);
+
+if(destination){
+mediaLink.href=destination;
+mediaLink.style.pointerEvents="auto";
+}else{
+mediaLink.removeAttribute("href");
+mediaLink.style.pointerEvents="none";
+}
+
+popup.classList.add("show");
+
+}catch(error){
+console.error("Popup loading error:",error);
+}
+}
+
+document.getElementById("popupClose").addEventListener("click",()=>{
+document.getElementById("sitePopup").classList.remove("show");
+});
 
 async function loadMovies(){
 try{
@@ -397,8 +583,8 @@ document.getElementById("empty").textContent="Movies could not be loaded. Please
 }
 
 loadMovies();
+loadWebsitePopup();
 </script>
 
 </body>
- </html>
- 
+</html>
