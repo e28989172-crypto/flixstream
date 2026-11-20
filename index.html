@@ -5,50 +5,114 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="FLIXSTREAM - Discover movies, trailers and official streaming links.">
+<meta name="theme-color" content="#080b12">
 <title>FLIXSTREAM | Discover Movies</title>
 
 <style>
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:#080b12;color:white;font-family:Arial,sans-serif;overflow-x:hidden}
-header{height:70px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;background:#111522;position:sticky;top:0;z-index:10;border-bottom:1px solid #242b39}
+
+header{
+height:70px;padding:0 5%;display:flex;align-items:center;
+justify-content:space-between;background:#111522;
+position:sticky;top:0;z-index:10;border-bottom:1px solid #242b39
+}
 .logo{font-size:23px;font-weight:900;color:#20d6a0}
 .logo span{color:white}
 nav{display:flex;gap:16px}
 nav a{color:#ddd;text-decoration:none;font-size:13px}
-.hero{padding:65px 6%;background:radial-gradient(ellipse at 90% 30%,#174c48,transparent 50%),linear-gradient(120deg,#172238,#0c101b)}
+nav a:hover{color:#20d6a0}
+
+.hero{
+padding:65px 6%;
+background:radial-gradient(ellipse at 90% 30%,#174c48,transparent 50%),linear-gradient(120deg,#172238,#0c101b)
+}
 .tag{color:#20d6a0;letter-spacing:3px;font-size:11px;font-weight:bold}
 .hero h1{font-size:clamp(38px,8vw,65px);line-height:1.08;margin:20px 0}
 .hero p{color:#b8c1d0;line-height:1.7;max-width:490px}
-.hero a{display:inline-block;background:#20c99a;color:#07130f;text-decoration:none;padding:14px 22px;border-radius:8px;font-weight:bold;margin-top:15px}
+.hero a{
+display:inline-block;background:#20c99a;color:#07130f;
+text-decoration:none;padding:14px 22px;border-radius:8px;
+font-weight:bold;margin-top:15px
+}
+.hero a:hover{background:#35e4b2;transform:translateY(-2px)}
+
 .search{padding:25px 5% 15px}
 .search form{display:flex;gap:9px}
-.search input{flex:1;min-width:0;padding:16px;border-radius:10px;border:1px solid #30394b;background:#151b29;color:white;font-size:16px;outline:none}
-.search button{width:54px;border:0;border-radius:10px;background:#20c99a;color:#07130f;font-size:21px;font-weight:bold;cursor:pointer}
+.search input{
+flex:1;min-width:0;padding:16px;border-radius:10px;
+border:1px solid #30394b;background:#151b29;color:white;
+font-size:16px;outline:none
+}
+.search input:focus{border-color:#20c99a}
+.search button{
+width:54px;border:0;border-radius:10px;background:#20c99a;
+color:#07130f;font-size:21px;font-weight:bold;cursor:pointer
+}
 .search button:active{transform:scale(.96)}
-.filters{display:flex;gap:10px;padding:8px 5% 25px;overflow-x:auto;scrollbar-width:none}
-.filters button{border:0;border-radius:30px;padding:11px 19px;background:#1a2130;color:white;white-space:nowrap;cursor:pointer}
+
+.filters{
+display:flex;gap:10px;padding:8px 5% 25px;
+overflow-x:auto;scrollbar-width:none
+}
+.filters::-webkit-scrollbar{display:none}
+.filters button{
+border:0;border-radius:30px;padding:11px 19px;
+background:#1a2130;color:white;white-space:nowrap;cursor:pointer
+}
 .filters button.active{background:#20c99a;color:#07130f}
+
 .section{padding:10px 5% 35px}
-.heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.heading{
+display:flex;justify-content:space-between;
+align-items:center;margin-bottom:18px
+}
 .heading h2{font-size:22px;margin:0}
 .heading span{color:#20c99a;font-size:12px}
-.movies{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
-.movie{min-width:0;background:#151a27;border:1px solid #252d3b;border-radius:12px;overflow:hidden}
-.poster{position:relative;height:220px;background:#202b3a}
+
+.movies{
+display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px
+}
+.movie{
+min-width:0;background:#151a27;border:1px solid #252d3b;
+border-radius:12px;overflow:hidden;transition:transform .25s,border-color .25s
+}
+.movie:hover{transform:translateY(-4px);border-color:#20c99a}
+
+.poster{
+position:relative;height:220px;background:#202b3a;
+display:flex;align-items:center;justify-content:center;
+overflow:hidden
+}
 .poster img{width:100%;height:100%;object-fit:cover;display:block}
-.poster-label{position:absolute;top:9px;left:9px;background:#20c99a;color:#07130f;padding:5px 8px;border-radius:5px;font-size:10px;font-weight:bold}
+.poster-label{
+position:absolute;top:9px;left:9px;background:#20c99a;
+color:#07130f;padding:5px 8px;border-radius:5px;
+font-size:10px;font-weight:bold
+}
 .info{padding:12px}
 .info h3{font-size:15px;margin:0 0 7px}
 .info p{font-size:12px;color:#aab4c4;margin:0 0 12px}
+
 .movie-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.watch{display:block;text-align:center;text-decoration:none;background:#202b3b;color:white;padding:11px 5px;border-radius:7px;font-size:11px;font-weight:bold}
+.watch{
+display:block;text-align:center;text-decoration:none;
+background:#202b3b;color:white;padding:11px 5px;
+border-radius:7px;font-size:11px;font-weight:bold
+}
 .watch:hover{background:#20c99a;color:#07130f}
 .stream{background:#20c99a;color:#07130f}
+
 .movie-link{display:block;color:inherit;text-decoration:none}
 .movie-link:focus-visible{outline:2px solid #20c99a;outline-offset:3px}
+
 .empty{display:none;color:#aab4c4;padding:20px 0}
-footer{background:#111522;text-align:center;padding:30px 15px;color:#929aaa;font-size:12px;line-height:1.8}
+footer{
+background:#111522;text-align:center;padding:30px 15px;
+color:#929aaa;font-size:12px;line-height:1.8
+}
+
 @media(min-width:700px){
 .movies{grid-template-columns:repeat(4,minmax(0,1fr))}
 .poster{height:290px}
@@ -57,6 +121,7 @@ footer{background:#111522;text-align:center;padding:30px 15px;color:#929aaa;font
 </head>
 
 <body>
+
 <header>
 <div class="logo">FLIX<span>STREAM</span></div>
 <nav>
@@ -98,7 +163,7 @@ footer{background:#111522;text-align:center;padding:30px 15px;color:#929aaa;font
 <div class="movie" data-category="Sci-Fi">
 <a class="movie-link" href="movie.html?movie=interstellar" target="_blank" rel="noopener">
 <div class="poster">
-<img src="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6M7C1g5h.jpg" alt="Interstellar">
+<img src="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6M7C1g5h.jpg" alt="Interstellar" loading="lazy">
 <span class="poster-label">POPULAR</span>
 </div>
 <div class="info">
@@ -117,7 +182,7 @@ footer{background:#111522;text-align:center;padding:30px 15px;color:#929aaa;font
 <div class="movie" data-category="Sci-Fi">
 <a class="movie-link" href="movie.html?movie=dune" target="_blank" rel="noopener">
 <div class="poster">
-<img src="https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg" alt="Dune">
+<img src="https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg" alt="Dune" loading="lazy">
 </div>
 <div class="info">
 <h3>Dune</h3>
@@ -135,7 +200,7 @@ footer{background:#111522;text-align:center;padding:30px 15px;color:#929aaa;font
 <div class="movie" data-category="Action">
 <a class="movie-link" href="movie.html?movie=spiderman" target="_blank" rel="noopener">
 <div class="poster">
-<img src="https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" alt="Spider-Man No Way Home">
+<img src="https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" alt="Spider-Man No Way Home" loading="lazy">
 </div>
 <div class="info">
 <h3>Spider-Man: No Way Home</h3>
@@ -153,7 +218,7 @@ footer{background:#111522;text-align:center;padding:30px 15px;color:#929aaa;font
 <div class="movie" data-category="Action">
 <a class="movie-link" href="movie.html?movie=inception" target="_blank" rel="noopener">
 <div class="poster">
-<img src="https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg" alt="Inception">
+<img src="https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg" alt="Inception" loading="lazy">
 </div>
 <div class="info">
 <h3>Inception</h3>
@@ -190,6 +255,7 @@ document.querySelectorAll(".movie").forEach(movie=>{
 const matchText=movie.innerText.toLowerCase().includes(query);
 const movieCategory=(movie.dataset.category || "").toLowerCase();
 const matchCategory=category==="All"||movieCategory.includes(category.toLowerCase());
+
 movie.style.display=matchText&&matchCategory?"block":"none";
 if(matchText&&matchCategory)visible++;
 });
@@ -209,57 +275,138 @@ event.preventDefault();
 filterMovies();
 document.getElementById("movies").scrollIntoView({behavior:"smooth"});
 });
+
+document.getElementById("search").addEventListener("input",filterMovies);
+window.filterMovies=filterMovies;
 </script>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+
 import {
-  getFirestore,
-  collection,
-  getDocs
+ getFirestore,
+ collection,
+ getDocs
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA6Boo_uo8Ttw9GXd0GB16f6VTucF0s904",
-  authDomain: "flixstream-b6d48.firebaseapp.com",
-  projectId: "flixstream-b6d48",
-  storageBucket: "flixstream-b6d48.firebasestorage.app",
-  messagingSenderId: "161127372124",
-  appId: "1:161127372124:web:5c91328cf68bd2b8021d99"
+ apiKey: "AIzaSyA6Boo_uo8Ttw9GXd0GB16f6VTucF0s904",
+ authDomain: "flixstream-b6d48.firebaseapp.com",
+ projectId: "flixstream-b6d48",
+ storageBucket: "flixstream-b6d48.firebasestorage.app",
+ messagingSenderId: "161127372124",
+ appId: "1:161127372124:web:5c91328cf68bd2b8021d99"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-function safe(value) {
-  return String(value || "").replace(/[&<>"']/g, c => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[c]);
+function safe(value){
+return String(value || "").replace(/[&<>"']/g,c=>({
+ "&":"&amp;",
+ "<":"&lt;",
+ ">":"&gt;",
+ '"':"&quot;",
+ "'":"&#39;"
+})[c]);
 }
 
-function safeUrl(value) {
-  try {
-    const url = new URL(String(value || ""));
-    return url.protocol === "https:" || url.protocol === "http:" ? url.href : "#";
-  } catch {
-    return "#";
-  }
+function safeUrl(value){
+try{
+const url=new URL(String(value || ""));
+return url.protocol==="https:"||url.protocol==="http:"?url.href:"";
+}catch{
+return "";
 }
 
-async function loadMovies() {
-  try {
-    const snapshot = await getDocs(collection(db, "movies"));
-    const list = document.getElementById("movieList");
+}
 
-    snapshot.forEach(docSnap => {
-      const movie = docSnap.data();
-      const title = movie.title || movie.name || "Untitled Movie";
-      const genre = movie.genre || "Other";
-      const year = movie.year || movie.releaseYear || "";
+async function loadMovies(){
+try{
+const snapshot=await getDocs(collection(db,"movies"));
+const list=document.getElementById("movieList");
+
+// Newest movies first
+const movies=snapshot.docs.sort((a,b)=>{
+const timeA=a.data().createdAt?.toMillis?.() || 0;
+const timeB=b.data().createdAt?.toMillis?.() || 0;
+return timeB-timeA;
+});
+
+const fragment=document.createDocumentFragment();
+
+movies.forEach(docSnap=>{
+const movie=docSnap.data();
+const title=movie.title || movie.name || "Untitled Movie";
+const genre=movie.genre || "Other";
+const year=movie.year || movie.releaseYear || "";
+const id=docSnap.id;
+
+const poster=safeUrl(movie.poster || movie.posterUrl);
+const trailer=safeUrl(movie.trailer || movie.trailerUrl);
+const watch=safeUrl(movie.watch || movie.watchUrl || movie.watchLink);
+
+// Avoid showing a duplicate if a matching original card exists
+const existingCard=Array.from(list.querySelectorAll(".movie-link")).find(link=>{
+try{
+return new URL(link.href).searchParams.get("movie")===id;
+}catch{
+return false;
+}
+});
+
+if(existingCard){
+existingCard.closest(".movie")?.remove();
+}
+
+const card=document.createElement("div");
+card.className="movie";
+card.dataset.category=genre;
+
+const trailerLink=trailer || "https://www.youtube.com/results?search_query="+encodeURIComponent(title+" official trailer");
+const watchLink=watch || "https://www.justwatch.com/in/search?q="+encodeURIComponent(title);
+
+card.innerHTML=`
+<a class="movie-link" href="movie.html?movie=${encodeURIComponent(id)}" target="_blank" rel="noopener">
+ <div class="poster">
+  ${poster ? `<img src="${poster}" alt="${safe(title)}" loading="lazy" onerror="this.style.display='none'">` : ""}
+  <span class="poster-label">NEW</span>
+ </div>
+ <div class="info">
+  <h3>${safe(title)}</h3>
+  <p>${safe(genre)} • ${safe(year)}</p>
+ </div>
+</a>
+<div class="info" style="padding-top:0">
+ <div class="movie-actions">
+  <a class="watch" href="${safe(trailerLink)}" target="_blank" rel="noopener">Find Trailer ↗</a>
+  <a class="watch stream" href="${safe(watchLink)}" target="_blank" rel="noopener">Where to Watch ↗</a>
+ </div>
+</div>
+`;
+
+fragment.appendChild(card);
+});
+
+// Firebase movies appear before the original homepage movies
+list.prepend(fragment);
+
+if(typeof window.filterMovies==="function"){
+window.filterMovies();
+}
+
+}catch(error){
+console.error("Movie loading error:",error);
+document.getElementById("empty").textContent="Movies could not be loaded. Please refresh the page.";
+}
+}
+
+loadMovies();
+</script>
+
+</body>
+</html>
+aseYear || "";
       const id = docSnap.id;
       const poster = safeUrl(movie.poster || movie.posterUrl || "");
       const trailer = safeUrl(movie.trailer || movie.trailerUrl || "");
