@@ -31,7 +31,6 @@ button.secondary{background:#34434b;color:white}
 <header><h2>FLIXSTREAM ADMIN</h2></header>
 
 <div class="container">
-
 <div class="card" id="loginBox">
 <h1>Admin Login 🔐</h1>
 <input id="email" type="email" placeholder="Admin Email">
@@ -47,7 +46,6 @@ button.secondary{background:#34434b;color:white}
 
 <div class="card">
 <h3 id="formTitle">Add New Movie</h3>
-
 <input id="movieTitle" placeholder="Movie Name *">
 <input id="movieId" placeholder="Movie ID (automatic if empty)">
 <input id="year" placeholder="Release Year">
@@ -61,7 +59,6 @@ button.secondary{background:#34434b;color:white}
 <input id="trailer" placeholder="Official Trailer URL">
 <input id="watchLink" placeholder="Official Watch URL">
 <input id="downloadLink" placeholder="Authorized Download URL">
-
 <button id="saveBtn">Save Movie</button>
 <button id="clearBtn" class="secondary">Clear Form</button>
 </div>
@@ -70,7 +67,6 @@ button.secondary{background:#34434b;color:white}
 <h3>All Movies</h3>
 <div id="movieList">Loading movies...</div>
 </div>
-
 <button id="logoutBtn" class="danger">Logout</button>
 </div>
 </div>
@@ -79,19 +75,12 @@ button.secondary{background:#34434b;color:white}
 import {initializeApp} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
 import {
- getAuth,
- signInWithEmailAndPassword,
- onAuthStateChanged,
- signOut
+ getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
 import {
- getFirestore,
- collection,
- getDocs,
- doc,
- setDoc,
- deleteDoc
+ getFirestore,collection,getDocs,doc,setDoc,deleteDoc,
+ getDoc,serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -108,7 +97,6 @@ const ADMIN_UID = "g9j2r2DbtIYxNkXupeJyoRL9qUC3";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
 const $ = id => document.getElementById(id);
 
 let editingId = null;
@@ -117,9 +105,7 @@ $("loginBtn").onclick = async () => {
  $("message").textContent = "Please wait...";
  try {
   await signInWithEmailAndPassword(
-   auth,
-   $("email").value.trim(),
-   $("password").value
+   auth,$("email").value.trim(),$("password").value
   );
   $("password").value = "";
  } catch(error) {
@@ -127,7 +113,7 @@ $("loginBtn").onclick = async () => {
  }
 };
 
-onAuthStateChanged(auth, async user => {
+onAuthStateChanged(auth,async user => {
  if(user && user.uid === ADMIN_UID) {
   $("loginBox").style.display = "none";
   $("dashboard").style.display = "block";
@@ -141,8 +127,7 @@ onAuthStateChanged(auth, async user => {
 });
 
 function makeId(text) {
- return text.toLowerCase()
-  .trim()
+ return text.toLowerCase().trim()
   .replace(/[^a-z0-9]+/g,"-")
   .replace(/^-|-$/g,"");
 }
@@ -174,27 +159,40 @@ $("saveBtn").onclick = async () => {
   return;
  }
 
+ const movieRef = doc(db,"movies",id);
+
  const data = {
   title,
-  year: $("year").value.trim(),
-  genre: $("genre").value.trim(),
-  rating: $("rating").value.trim(),
-  director: $("director").value.trim(),
-  cast: $("cast").value.split(",").map(x=>x.trim()).filter(Boolean),
-  story: $("story").value.trim(),
-  poster: $("poster").value.trim(),
-  screenshots: $("screenshots").value.split(",").map(x=>x.trim()).filter(Boolean),
-  trailer: $("trailer").value.trim(),
-  watchLink: $("watchLink").value.trim(),
-  downloadLink: $("downloadLink").value.trim()
+  year:$("year").value.trim(),
+  genre:$("genre").value.trim(),
+  rating:$("rating").value.trim(),
+  director:$("director").value.trim(),
+  cast:$("cast").value.split(",").map(x=>x.trim()).filter(Boolean),
+  story:$("story").value.trim(),
+  poster:$("poster").value.trim(),
+  screenshots:$("screenshots").value.split(",").map(x=>x.trim()).filter(Boolean),
+  trailer:$("trailer").value.trim(),
+  watch:$("watchLink").value.trim(),
+  downloadLink:$("downloadLink").value.trim()
  };
 
  try {
   $("status").textContent = "Saving movie...";
-  await setDoc(doc(db,"movies",id),data);
+
+  const oldMovie = await getDoc(movieRef);
+
+  if(oldMovie.exists() && oldMovie.data().createdAt) {
+   data.createdAt = oldMovie.data().createdAt;
+  } else {
+   data.createdAt = serverTimestamp();
+  }
+
+  await setDoc(movieRef,data);
+
   $("status").textContent = "Movie saved successfully!";
   clearForm();
   await loadMovies();
+
  } catch(error) {
   $("status").textContent = "Error: " + error.message;
  }
@@ -211,7 +209,13 @@ async function loadMovies() {
    return;
   }
 
-  result.forEach(item => {
+  const movies = result.docs.sort((a,b) => {
+   const timeA = a.data().createdAt?.toMillis?.() || 0;
+   const timeB = b.data().createdAt?.toMillis?.() || 0;
+   return timeB - timeA;
+  });
+
+  movies.forEach(item => {
    const data = item.data();
    const box = document.createElement("div");
    box.className = "movie";
@@ -235,6 +239,7 @@ async function loadMovies() {
    box.append(heading,details,edit,remove);
    list.appendChild(box);
   });
+
  } catch(error) {
   $("movieList").textContent = "Error: " + error.message;
  }
@@ -251,12 +256,12 @@ function editMovie(id,data) {
  $("genre").value = data.genre || "";
  $("rating").value = data.rating || "";
  $("director").value = data.director || "";
- $("cast").value = (data.cast || []).join(", ");
+ $("cast").value = Array.isArray(data.cast) ? data.cast.join(", ") : (data.cast || "");
  $("story").value = data.story || "";
- $("poster").value = data.poster || "";
- $("screenshots").value = (data.screenshots || []).join(", ");
- $("trailer").value = data.trailer || "";
- $("watchLink").value = data.watchLink || "";
+ $("poster").value = data.poster || data.posterUrl || "";
+ $("screenshots").value = Array.isArray(data.screenshots) ? data.screenshots.join(", ") : "";
+ $("trailer").value = data.trailer || data.trailerUrl || "";
+ $("watchLink").value = data.watch || data.watchLink || data.watchUrl || "";
  $("downloadLink").value = data.downloadLink || "";
 
  window.scrollTo({top:0,behavior:"smooth"});
@@ -279,5 +284,4 @@ async function removeMovie(id) {
 $("logoutBtn").onclick = () => signOut(auth);
 </script>
 </body>
- </html>
- 
+</html>
