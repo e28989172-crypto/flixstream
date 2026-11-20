@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -408,6 +407,7 @@ return url.protocol==="https:"||url.protocol==="http:"?url.href:"";
 }catch{
 return "";
 }
+}
 
 /* LOAD WEBSITE POPUP */
 async function loadWebsitePopup(){
@@ -432,7 +432,7 @@ const type=data.mediaType;
 if(!mediaUrl || (type!=="image" && type!=="video")) return;
 
 const oldMedia=document.getElementById("popupMedia");
-const media= document.createElement(type==="video"?"video":"img");
+const media=document.createElement(type==="video"?"video":"img");
 
 media.id="popupMedia";
 media.className=oldMedia.className;
@@ -447,6 +447,9 @@ media.controls=true;
 media.muted=false;
 media.preload="metadata";
 
+/* Prevent video control clicks from opening the destination */
+media.addEventListener("click",event=>event.stopPropagation());
+
 soundButton.style.display="inline-block";
 soundButton.textContent="Mute 🔊";
 
@@ -455,8 +458,12 @@ media.muted=!media.muted;
 soundButton.textContent=media.muted?"Unmute 🔊":"Mute 🔊";
 
 if(!media.muted){
-try{await media.play();}
-catch(error){media.muted=true;soundButton.textContent="Unmute 🔊";}
+try{
+await media.play();
+}catch(error){
+media.muted=true;
+soundButton.textContent="Unmute 🔊";
+}
 }
 };
 
@@ -474,7 +481,12 @@ try{await media.play();}catch(e){}
 }
 },{once:true});
 
-hint.textContent="Video promotion • Tap to visit";
+media.addEventListener("error",()=>{
+popup.classList.remove("show");
+console.error("Popup video could not be loaded.");
+});
+
+hint.textContent="Video promotion • Use controls to play";
 
 }else{
 media.src=mediaUrl;
@@ -482,6 +494,11 @@ media.alt="Featured promotion";
 media.loading="eager";
 soundButton.style.display="none";
 hint.textContent="Tap image to visit";
+
+media.addEventListener("error",()=>{
+popup.classList.remove("show");
+console.error("Popup image could not be loaded.");
+});
 }
 
 oldMedia.replaceWith(media);
@@ -502,9 +519,15 @@ console.error("Popup loading error:",error);
 }
 
 document.getElementById("popupClose").addEventListener("click",()=>{
-document.getElementById("sitePopup").classList.remove("show");
+const popup=document.getElementById("sitePopup");
+const video=popup.querySelector("video");
+
+if(video) video.pause();
+
+popup.classList.remove("show");
 });
 
+/* LOAD MOVIES FROM FIRESTORE */
 async function loadMovies(){
 try{
 const snapshot=await getDocs(collection(db,"movies"));
@@ -529,6 +552,7 @@ const poster=safeUrl(movie.poster || movie.posterUrl);
 const trailer=safeUrl(movie.trailer || movie.trailerUrl);
 const watch=safeUrl(movie.watch || movie.watchUrl || movie.watchLink);
 
+/* Remove the old card if this movie already exists */
 const existingCard=Array.from(list.querySelectorAll(".movie-link")).find(link=>{
 try{
 return new URL(link.href).searchParams.get("movie")===id;
@@ -579,6 +603,7 @@ window.filterMovies();
 }catch(error){
 console.error("Movie loading error:",error);
 document.getElementById("empty").textContent="Movies could not be loaded. Please refresh the page.";
+document.getElementById("empty").style.display="block";
 }
 }
 
@@ -587,4 +612,4 @@ loadWebsitePopup();
 </script>
 
 </body>
-</html>
+ </html>
