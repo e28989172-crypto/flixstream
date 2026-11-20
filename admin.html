@@ -8,26 +8,32 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d12;color:white;font-family:Arial,sans-serif}
-header{padding:20px;background:#101a20;border-bottom:1px solid #20c99a}
+header{padding:18px;background:#101a20;border-bottom:1px solid #20c99a}
 header h2{margin:0;color:#20c99a}
-.container{max-width:700px;margin:auto;padding:20px}
-.card{background:#121d24;padding:22px;border-radius:12px;margin:18px 0}
+.container{max-width:850px;margin:auto;padding:18px}
+.card{background:#121d24;padding:20px;border-radius:12px;margin:16px 0}
 h1{font-size:25px}
 h3{color:#20c99a}
-input{width:100%;padding:13px;margin:9px 0;background:#080d12;border:1px solid #34434b;border-radius:7px;color:white}
-button{background:#20c99a;color:#06120e;border:0;padding:13px 18px;border-radius:7px;font-weight:bold;cursor:pointer}
-.note{color:#aab8bf;font-size:14px;line-height:1.6}
+input,textarea{width:100%;padding:13px;margin:7px 0;background:#080d12;border:1px solid #34434b;border-radius:7px;color:white}
+textarea{min-height:85px;resize:vertical}
+button{background:#20c99a;color:#06120e;border:0;padding:11px 16px;border-radius:7px;font-weight:bold;margin:5px;cursor:pointer}
+button.danger{background:#e34d5b;color:white}
+button.secondary{background:#34434b;color:white}
+.note{color:#aab8bf;font-size:13px;line-height:1.5}
+.movie{border:1px solid #34434b;padding:14px;border-radius:9px;margin:12px 0}
+.movie h3{margin:0 0 8px}
 #dashboard{display:none}
 #message{color:#ffb6b6;white-space:pre-wrap}
+#status{color:#20c99a}
 </style>
 </head>
 <body>
 <header><h2>FLIXSTREAM ADMIN</h2></header>
 
 <div class="container">
+
 <div class="card" id="loginBox">
 <h1>Admin Login 🔐</h1>
-<p class="note">Login with your registered email and password.</p>
 <input id="email" type="email" placeholder="Admin Email">
 <input id="password" type="password" placeholder="Password">
 <button id="loginBtn">Login</button>
@@ -35,27 +41,58 @@ button{background:#20c99a;color:#06120e;border:0;padding:13px 18px;border-radius
 </div>
 
 <div id="dashboard">
-<h1>Welcome to Admin Dashboard 🎬</h1>
+<h1>Movie Management 🎬</h1>
+<p class="note">Add, edit and delete your movie information.</p>
+<p id="status"></p>
+
 <div class="card">
-<h3>Movie Management</h3>
-<p class="note">Your Firebase login is working. Movie management will be connected next.</p>
+<h3 id="formTitle">Add New Movie</h3>
+
+<input id="movieTitle" placeholder="Movie Name *">
+<input id="movieId" placeholder="Movie ID (automatic if empty)">
+<input id="year" placeholder="Release Year">
+<input id="genre" placeholder="Genre">
+<input id="rating" placeholder="Rating (example: 8.5/10)">
+<input id="director" placeholder="Director">
+<input id="cast" placeholder="Cast (comma separated)">
+<textarea id="story" placeholder="Movie Story / Description"></textarea>
+<input id="poster" placeholder="Poster Image URL">
+<textarea id="screenshots" placeholder="Screenshot URLs (comma separated)"></textarea>
+<input id="trailer" placeholder="Official Trailer URL">
+<input id="watchLink" placeholder="Official Watch URL">
+<input id="downloadLink" placeholder="Authorized Download URL">
+
+<button id="saveBtn">Save Movie</button>
+<button id="clearBtn" class="secondary">Clear Form</button>
 </div>
+
 <div class="card">
-<h3>Screenshots Gallery</h3>
-<p class="note">Screenshot management will be added next.</p>
+<h3>All Movies</h3>
+<div id="movieList">Loading movies...</div>
 </div>
-<button id="logoutBtn">Logout</button>
+
+<button id="logoutBtn" class="danger">Logout</button>
 </div>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+
 import {
  getAuth,
  signInWithEmailAndPassword,
  onAuthStateChanged,
  signOut
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+ getFirestore,
+ collection,
+ getDocs,
+ doc,
+ setDoc,
+ deleteDoc
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const firebaseConfig = {
  apiKey: "AIzaSyA6Boo_uo8Ttw9GXd0GB16f6VTucF0s904",
@@ -66,40 +103,181 @@ const firebaseConfig = {
  appId: "1:161127372124:web:5c91328cf68bd2b8021d99"
 };
 
+const ADMIN_UID = "g9j2r2DbtIYxNkXupeJyoRL9qUC3";
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-const loginBox = document.getElementById("loginBox");
-const dashboard = document.getElementById("dashboard");
-const message = document.getElementById("message");
+const $ = id => document.getElementById(id);
 
-document.getElementById("loginBtn").addEventListener("click", async () => {
- const email = document.getElementById("email").value.trim();
- const password = document.getElementById("password").value;
+let editingId = null;
 
- message.textContent = "Please wait...";
+$("loginBtn").onclick = async () => {
+ $("message").textContent = "Please wait...";
+ try {
+  await signInWithEmailAndPassword(
+   auth,
+   $("email").value.trim(),
+   $("password").value
+  );
+  $("password").value = "";
+ } catch(error) {
+  $("message").textContent = "Login failed: " + error.message;
+ }
+};
+
+onAuthStateChanged(auth, async user => {
+ if(user && user.uid === ADMIN_UID) {
+  $("loginBox").style.display = "none";
+  $("dashboard").style.display = "block";
+  $("message").textContent = "";
+  await loadMovies();
+ } else {
+  $("loginBox").style.display = "block";
+  $("dashboard").style.display = "none";
+  if(user) await signOut(auth);
+ }
+});
+
+function makeId(text) {
+ return text.toLowerCase()
+  .trim()
+  .replace(/[^a-z0-9]+/g,"-")
+  .replace(/^-|-$/g,"");
+}
+
+function clearForm() {
+ editingId = null;
+ $("formTitle").textContent = "Add New Movie";
+ $("saveBtn").textContent = "Save Movie";
+ [
+  "movieTitle","movieId","year","genre","rating",
+  "director","cast","story","poster","screenshots",
+  "trailer","watchLink","downloadLink"
+ ].forEach(id => $(id).value = "");
+}
+
+$("clearBtn").onclick = clearForm;
+
+$("saveBtn").onclick = async () => {
+ if(!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
+  $("status").textContent = "Admin login required.";
+  return;
+ }
+
+ const title = $("movieTitle").value.trim();
+ const id = editingId || makeId($("movieId").value || title);
+
+ if(!title || !id) {
+  $("status").textContent = "Movie Name is required.";
+  return;
+ }
+
+ const data = {
+  title,
+  year: $("year").value.trim(),
+  genre: $("genre").value.trim(),
+  rating: $("rating").value.trim(),
+  director: $("director").value.trim(),
+  cast: $("cast").value.split(",").map(x=>x.trim()).filter(Boolean),
+  story: $("story").value.trim(),
+  poster: $("poster").value.trim(),
+  screenshots: $("screenshots").value.split(",").map(x=>x.trim()).filter(Boolean),
+  trailer: $("trailer").value.trim(),
+  watchLink: $("watchLink").value.trim(),
+  downloadLink: $("downloadLink").value.trim()
+ };
 
  try {
-  await signInWithEmailAndPassword(auth, email, password);
-  message.textContent = "";
- } catch (error) {
-  message.textContent = "Login failed: " + error.message;
+  $("status").textContent = "Saving movie...";
+  await setDoc(doc(db,"movies",id),data);
+  $("status").textContent = "Movie saved successfully!";
+  clearForm();
+  await loadMovies();
+ } catch(error) {
+  $("status").textContent = "Error: " + error.message;
  }
-});
+};
 
-onAuthStateChanged(auth, (user) => {
- if (user) {
-  loginBox.style.display = "none";
-  dashboard.style.display = "block";
- } else {
-  loginBox.style.display = "block";
-  dashboard.style.display = "none";
+async function loadMovies() {
+ try {
+  const result = await getDocs(collection(db,"movies"));
+  const list = $("movieList");
+  list.innerHTML = "";
+
+  if(result.empty) {
+   list.textContent = "No movies added yet.";
+   return;
+  }
+
+  result.forEach(item => {
+   const data = item.data();
+   const box = document.createElement("div");
+   box.className = "movie";
+
+   const heading = document.createElement("h3");
+   heading.textContent = data.title || item.id;
+
+   const details = document.createElement("p");
+   details.className = "note";
+   details.textContent = (data.year || "") + " • " + (data.genre || "");
+
+   const edit = document.createElement("button");
+   edit.textContent = "Edit";
+   edit.onclick = () => editMovie(item.id,data);
+
+   const remove = document.createElement("button");
+   remove.textContent = "Delete";
+   remove.className = "danger";
+   remove.onclick = () => removeMovie(item.id);
+
+   box.append(heading,details,edit,remove);
+   list.appendChild(box);
+  });
+ } catch(error) {
+  $("movieList").textContent = "Error: " + error.message;
  }
-});
+}
 
-document.getElementById("logoutBtn").addEventListener("click", async () => {
- await signOut(auth);
-});
+function editMovie(id,data) {
+ editingId = id;
+ $("formTitle").textContent = "Edit Movie";
+ $("saveBtn").textContent = "Update Movie";
+
+ $("movieTitle").value = data.title || "";
+ $("movieId").value = id;
+ $("year").value = data.year || "";
+ $("genre").value = data.genre || "";
+ $("rating").value = data.rating || "";
+ $("director").value = data.director || "";
+ $("cast").value = (data.cast || []).join(", ");
+ $("story").value = data.story || "";
+ $("poster").value = data.poster || "";
+ $("screenshots").value = (data.screenshots || []).join(", ");
+ $("trailer").value = data.trailer || "";
+ $("watchLink").value = data.watchLink || "";
+ $("downloadLink").value = data.downloadLink || "";
+
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+async function removeMovie(id) {
+ if(!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) return;
+ if(!confirm("Are you sure you want to delete this movie?")) return;
+
+ try {
+  await deleteDoc(doc(db,"movies",id));
+  $("status").textContent = "Movie deleted.";
+  if(editingId === id) clearForm();
+  await loadMovies();
+ } catch(error) {
+  $("status").textContent = "Error: " + error.message;
+ }
+}
+
+$("logoutBtn").onclick = () => signOut(auth);
 </script>
 </body>
-</html>
+ </html>
+ 
