@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLIXSTREAM - Discover Movies</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#090b12;color:white;font-family:Arial,sans-serif}
+header{padding:20px 5%;display:flex;justify-content:space-between;align-items:center;background:#111522;position:sticky;top:0;z-index:5}
+.logo{font-size:25px;font-weight:900;color:#20d6a0}
+.logo span{color:white}
+nav a{color:#ddd;text-decoration:none;margin-left:14px;font-size:13px}
+.hero{padding:65px 6%;background:linear-gradient(110deg,#172b3c,#101321 65%,#172b30)}
+.hero small{color:#20d6a0;font-weight:bold;letter-spacing:3px}
+.hero h1{font-size:42px;margin:15px 0}
+.hero p{color:#c0c5d0;line-height:1.6;max-width:480px}
+.search{padding:25px 5%}
+.search input{width:100%;padding:16px;border-radius:10px;border:1px solid #343b4d;background:#171c29;color:white;font-size:16px;outline:none}
+.categories{display:flex;gap:10px;overflow:auto;padding:0 5% 25px}
+.categories button{background:#1b2231;color:white;border:0;padding:11px 18px;border-radius:25px;white-space:nowrap}
+.categories button.active{background:#20b98e;color:#07110e}
+.section{padding:10px 5% 35px}
+.section h2{margin-bottom:20px;font-size:23px}
+.movies{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.movie{background:#151a27;border-radius:12px;overflow:hidden;border:1px solid #252b3a}
+.poster{height:180px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#174b50,#24213e);font-size:38px;font-weight:900;color:#ffffff80}
+.movie:nth-child(2) .poster{background:linear-gradient(145deg,#663b36,#201b35)}
+.movie:nth-child(3) .poster{background:linear-gradient(145deg,#343c70,#171c2c)}
+.movie:nth-child(4) .poster{background:linear-gradient(145deg,#72532c,#29203b)}
+.info{padding:13px}
+.info h3{font-size:16px;margin-bottom:7px}
+.info p{font-size:12px;color:#aeb6c5;margin-bottom:12px}
+.watch{display:block;text-align:center;text-decoration:none;background:#20b98e;color:#06130e;padding:11px;border-radius:7px;font-weight:bold;font-size:13px}
+footer{text-align:center;padding:30px 15px;color:#929aaa;background:#111522;font-size:13px}
+@media(min-width:700px){.movies{grid-template-columns:repeat(4,minmax(0,1fr))}.poster{height:260px}.hero h1{font-size:55px}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">FLIX<span>STREAM</span></div>
+<nav><a href="#">Home</a><a href="#movies">Movies</a></nav>
+</header>
+
+<section class="hero">
+<small>YOUR ENTERTAINMENT DESTINATION</small>
+<h1>Discover.<br>Watch. Enjoy.</h1>
+<p>Explore movies, discover trailers and find official streaming links in one place.</p>
+</section>
+
+<div class="search">
+<input id="search" type="search" placeholder="Search your favourite movie..." oninput="filterMovies()">
+</div>
+
+<div class="categories">
+<button class="active" onclick="filterCategory('All',this)">All</button>
+<button onclick="filterCategory('Action',this)">Action</button>
+<button onclick="filterCategory('Drama',this)">Drama</button>
+<button onclick="filterCategory('Comedy',this)">Comedy</button>
+<button onclick="filterCategory('Animation',this)">Animation</button>
+</div>
+
+<section class="section" id="movies">
+<h2>Explore Movies</h2>
+<div class="movies" id="movieList">
+<div class="movie" data-category="Action">
+<div class="poster">FS</div>
+<div class="info"><h3>Movie Title 1</h3><p>Action • 2026</p><a class="watch" href="#movies">Coming Soon</a></div>
+</div>
+<div class="movie" data-category="Drama">
+<div class="poster">FS</div>
+<div class="info"><h3>Movie Title 2</h3><p>Drama • 2026</p><a class="watch" href="#movies">Coming Soon</a></div>
+</div>
+<div class="movie" data-category="Comedy">
+<div class="poster">FS</div>
+<div class="info"><h3>Movie Title 3</h3><p>Comedy • 2026</p><a class="watch" href="#movies">Coming Soon</a></div>
+</div>
+<div class="movie" data-category="Animation">
+<div class="poster">FS</div>
+<div class="info"><h3>Movie Title 4</h3><p>Animation • 2026</p><a class="watch" href="#movies">Coming Soon</a></div>
+</div>
+</div>
+</section>
+
+<footer>
+<p>FLIXSTREAM © 2026</p>
+<p>Discover movies. Watch through official platforms.</p>
+</footer>
+
+<script>
+let selectedCategory="All";
+function filterMovies(){
+ const q=document.getElementById("search").value.toLowerCase();
+ document.querySelectorAll(".movie").forEach(movie=>{
+ const matchName=movie.innerText.toLowerCase().includes(q);
+ const matchCategory=selectedCategory==="All"||movie.dataset.category===selectedCategory;
+ movie.style.display=matchName&&matchCategory?"block":"none";
+ });
+}
+function filterCategory(category,button){
+ selectedCategory=category;
+ document.querySelectorAll(".categories button").forEach(b=>b.classList.remove("active"));
+ button.classList.add("active");
+ filterMovies();
+}
+</script>
+</body>
+  </html>
+  
