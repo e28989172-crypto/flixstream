@@ -4,50 +4,73 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Discover movies and official streaming links on FLIXSTREAM.">
+<meta name="description" content="FLIXSTREAM - Discover movies, trailers and official streaming links.">
 <title>FLIXSTREAM | Discover Movies</title>
+
 <style>
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:#080b12;color:white;font-family:Arial,sans-serif;overflow-x:hidden}
+
 header{height:70px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;background:#111522;position:sticky;top:0;z-index:10;border-bottom:1px solid #242b39}
 .logo{font-size:23px;font-weight:900;color:#20d6a0}
 .logo span{color:white}
 nav{display:flex;gap:16px}
 nav a{color:#ddd;text-decoration:none;font-size:13px}
+
 .hero{padding:65px 6%;background:radial-gradient(ellipse at 90% 30%,#174c48,transparent 50%),linear-gradient(120deg,#172238,#0c101b)}
 .tag{color:#20d6a0;letter-spacing:3px;font-size:11px;font-weight:bold}
 .hero h1{font-size:clamp(38px,8vw,65px);line-height:1.08;margin:20px 0}
 .hero p{color:#b8c1d0;line-height:1.7;max-width:490px}
 .hero a{display:inline-block;background:#20c99a;color:#07130f;text-decoration:none;padding:14px 22px;border-radius:8px;font-weight:bold;margin-top:15px}
+
 .search{padding:25px 5% 15px}
-.search input{width:100%;padding:16px;border-radius:10px;border:1px solid #30394b;background:#151b29;color:white;font-size:16px;outline:none}
+.search form{display:flex;gap:9px}
+.search input{flex:1;min-width:0;padding:16px;border-radius:10px;border:1px solid #30394b;background:#151b29;color:white;font-size:16px;outline:none}
+.search button{width:54px;border:0;border-radius:10px;background:#20c99a;color:#07130f;font-size:21px;font-weight:bold;cursor:pointer}
+.search button:active{transform:scale(.96)}
+
 .filters{display:flex;gap:10px;padding:8px 5% 25px;overflow-x:auto;scrollbar-width:none}
-.filters button{border:0;border-radius:30px;padding:11px 19px;background:#1a2130;color:white;white-space:nowrap}
+.filters button{border:0;border-radius:30px;padding:11px 19px;background:#1a2130;color:white;white-space:nowrap;cursor:pointer}
 .filters button.active{background:#20c99a;color:#07130f}
+
 .section{padding:10px 5% 35px}
 .heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .heading h2{font-size:22px;margin:0}
 .heading span{color:#20c99a;font-size:12px}
+
 .movies{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
 .movie{min-width:0;background:#151a27;border:1px solid #252d3b;border-radius:12px;overflow:hidden}
 .poster{position:relative;height:220px;background:#202b3a}
 .poster img{width:100%;height:100%;object-fit:cover;display:block}
 .poster-label{position:absolute;top:9px;left:9px;background:#20c99a;color:#07130f;padding:5px 8px;border-radius:5px;font-size:10px;font-weight:bold}
+
 .info{padding:12px}
 .info h3{font-size:15px;margin:0 0 7px}
 .info p{font-size:12px;color:#aab4c4;margin:0 0 12px}
-.watch{display:block;text-align:center;text-decoration:none;background:#202b3b;color:white;padding:11px;border-radius:7px;font-size:12px;font-weight:bold}
+.movie-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.watch{display:block;text-align:center;text-decoration:none;background:#202b3b;color:white;padding:11px 5px;border-radius:7px;font-size:11px;font-weight:bold}
 .watch:hover{background:#20c99a;color:#07130f}
+.stream{background:#20c99a;color:#07130f}
+
 .empty{display:none;color:#aab4c4;padding:20px 0}
 footer{background:#111522;text-align:center;padding:30px 15px;color:#929aaa;font-size:12px;line-height:1.8}
-@media(min-width:700px){.movies{grid-template-columns:repeat(4,minmax(0,1fr))}.poster{height:290px}}
+
+@media(min-width:700px){
+.movies{grid-template-columns:repeat(4,minmax(0,1fr))}
+.poster{height:290px}
+}
 </style>
 </head>
+
 <body>
+
 <header>
 <div class="logo">FLIX<span>STREAM</span></div>
-<nav><a href="#">Home</a><a href="#movies">Movies</a></nav>
+<nav>
+<a href="#">Home</a>
+<a href="#movies">Movies</a>
+</nav>
 </header>
 
 <section class="hero">
@@ -58,7 +81,10 @@ footer{background:#111522;text-align:center;padding:30px 15px;color:#929aaa;font
 </section>
 
 <div class="search">
-<input id="search" type="search" placeholder="Search your favourite movie..." oninput="filterMovies()">
+<form id="searchForm">
+<input id="search" type="search" placeholder="Search your favourite movie..." aria-label="Search movies">
+<button type="submit" aria-label="Search">⌕</button>
+</form>
 </div>
 
 <div class="filters">
@@ -70,7 +96,11 @@ footer{background:#111522;text-align:center;padding:30px 15px;color:#929aaa;font
 </div>
 
 <section class="section" id="movies">
-<div class="heading"><h2>Popular Movies</h2><span>EXPLORE ALL</span></div>
+<div class="heading">
+<h2>Popular Movies</h2>
+<span>EXPLORE ALL</span>
+</div>
+
 <div class="movies" id="movieList">
 
 <div class="movie" data-category="Sci-Fi">
@@ -78,31 +108,60 @@ footer{background:#111522;text-align:center;padding:30px 15px;color:#929aaa;font
 <img src="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6M7C1g5h.jpg" alt="Interstellar">
 <span class="poster-label">POPULAR</span>
 </div>
-<div class="info"><h3>Interstellar</h3><p>Sci-Fi • 2014</p><a class="watch" href="https://www.youtube.com/results?search_query=Interstellar+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a></div>
+<div class="info">
+<h3>Interstellar</h3>
+<p>Sci-Fi • 2014</p>
+<div class="movie-actions">
+<a class="watch" href="https://www.youtube.com/results?search_query=Interstellar+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a>
+<a class="watch stream" href="https://www.justwatch.com/in/search?q=Interstellar" target="_blank" rel="noopener">Where to Watch ↗</a>
+</div>
+</div>
 </div>
 
 <div class="movie" data-category="Sci-Fi">
 <div class="poster">
 <img src="https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg" alt="Dune">
 </div>
-<div class="info"><h3>Dune</h3><p>Sci-Fi • 2021</p><a class="watch" href="https://www.youtube.com/results?search_query=Dune+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a></div>
+<div class="info">
+<h3>Dune</h3>
+<p>Sci-Fi • 2021</p>
+<div class="movie-actions">
+<a class="watch" href="https://www.youtube.com/results?search_query=Dune+2021+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a>
+<a class="watch stream" href="https://www.justwatch.com/in/search?q=Dune" target="_blank" rel="noopener">Where to Watch ↗</a>
+</div>
+</div>
 </div>
 
 <div class="movie" data-category="Action">
 <div class="poster">
 <img src="https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" alt="Spider-Man No Way Home">
 </div>
-<div class="info"><h3>Spider-Man: No Way Home</h3><p>Action • 2021</p><a class="watch" href="https://www.youtube.com/results?search_query=Spider-Man+No+Way+Home+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a></div>
+<div class="info">
+<h3>Spider-Man: No Way Home</h3>
+<p>Action • 2021</p>
+<div class="movie-actions">
+<a class="watch" href="https://www.youtube.com/results?search_query=Spider-Man+No+Way+Home+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a>
+<a class="watch stream" href="https://www.justwatch.com/in/search?q=Spider-Man%20No%20Way%20Home" target="_blank" rel="noopener">Where to Watch ↗</a>
+</div>
+</div>
 </div>
 
 <div class="movie" data-category="Action">
 <div class="poster">
 <img src="https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg" alt="Inception">
 </div>
-<div class="info"><h3>Inception</h3><p>Action • 2010</p><a class="watch" href="https://www.youtube.com/results?search_query=Inception+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a></div>
+<div class="info">
+<h3>Inception</h3>
+<p>Action • 2010</p>
+<div class="movie-actions">
+<a class="watch" href="https://www.youtube.com/results?search_query=Inception+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a>
+<a class="watch stream" href="https://www.justwatch.com/in/search?q=Inception" target="_blank" rel="noopener">Where to Watch ↗</a>
+</div>
+</div>
 </div>
 
 </div>
+
 <div class="empty" id="empty">No movies found. Try another search.</div>
 </section>
 
@@ -114,24 +173,36 @@ Discover movies. Find official places to watch.<br>
 
 <script>
 let category="All";
+
 function filterMovies(){
-const query=document.getElementById("search").value.toLowerCase();
+const query=document.getElementById("search").value.trim().toLowerCase();
 let visible=0;
+
 document.querySelectorAll(".movie").forEach(movie=>{
 const matchText=movie.innerText.toLowerCase().includes(query);
 const matchCategory=category==="All"||movie.dataset.category===category;
+
 movie.style.display=matchText&&matchCategory?"block":"none";
 if(matchText&&matchCategory)visible++;
 });
+
 document.getElementById("empty").style.display=visible?"none":"block";
 }
+
 function setCategory(value,button){
 category=value;
 document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
 button.classList.add("active");
 filterMovies();
 }
+
+document.getElementById("searchForm").addEventListener("submit",function(event){
+event.preventDefault();
+filterMovies();
+document.getElementById("movies").scrollIntoView({behavior:"smooth"});
+});
 </script>
+
 </body>
-                                                            </html>
-                                                
+  </html>
+  
