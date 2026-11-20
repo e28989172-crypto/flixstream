@@ -4,38 +4,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FLIXSTREAM movie details, ratings and official watch links.">
 <title>FLIXSTREAM | Movie Details</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d12;color:white;font-family:Arial,sans-serif}
-header{padding:20px 6%;background:#101820;border-bottom:1px solid #26343d}
-.logo{color:#20c99a;font-size:25px;font-weight:bold}
-main{max-width:1100px;margin:auto;padding:25px 5%}
-.back{color:#20c99a;text-decoration:none;display:inline-block;margin-bottom:25px}
-.hero{display:grid;grid-template-columns:260px 1fr;gap:30px}
-.poster{width:100%;border-radius:12px}
-h1{font-size:34px;margin:5px 0 12px}
-.meta{color:#aab7c0;line-height:1.8}
-p{line-height:1.7;color:#c7d0d6}
-.buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
-.btn{padding:13px 18px;border-radius:7px;background:#20c99a;color:#06120e;text-decoration:none;font-weight:bold;border:0;cursor:pointer}
-.btn.secondary{background:#26343d;color:white}
+body{margin:0;background:#080b12;color:white;font-family:Arial,sans-serif}
+header{height:70px;padding:0 6%;display:flex;align-items:center;background:#101522;border-bottom:1px solid #283140}
+.logo{font-size:25px;font-weight:900;color:#20d6a0}
+.logo span{color:white}
+main{max-width:1150px;margin:auto;padding:25px 5%}
+.back{color:#20d6a0;text-decoration:none;display:inline-block;margin:5px 0 25px}
+.hero{display:grid;grid-template-columns:280px 1fr;gap:35px;align-items:center;padding:25px;background:linear-gradient(120deg,#172638,#101520);border:1px solid #283546;border-radius:16px}
+.poster{width:100%;border-radius:12px;box-shadow:0 15px 35px #0009}
+h1{font-size:clamp(30px,5vw,45px);margin:8px 0 15px}
+.meta{color:#b7c3d1;line-height:2}
+.rating{display:inline-block;background:#20c99a;color:#07130f;padding:8px 13px;border-radius:7px;font-weight:bold;margin:12px 0}
+.story{color:#c5ced9;line-height:1.8;margin-top:15px}
+.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.btn{display:inline-block;padding:13px 17px;border-radius:8px;background:#20c99a;color:#07130f;text-decoration:none;font-weight:bold;border:0;cursor:pointer;font-size:13px}
+.btn.secondary{background:#273444;color:white}
+.btn:hover{opacity:.85}
 section{margin-top:35px}
-h2{border-left:4px solid #20c99a;padding-left:12px}
-.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.gallery img{width:100%;border-radius:9px}
-.similar{display:flex;gap:12px;flex-wrap:wrap}
-.similar a{color:#20c99a;background:#15212a;padding:12px;border-radius:8px;text-decoration:none}
+h2{font-size:22px;border-left:4px solid #20c99a;padding-left:12px;margin-bottom:20px}
+.details{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.detail{background:#151d2a;border:1px solid #283344;padding:17px;border-radius:10px}
+.detail strong{display:block;color:#20c99a;margin-bottom:8px;font-size:12px}
+.detail span{color:#e2e8ef;font-size:14px;line-height:1.6}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.gallery img{width:100%;border-radius:10px;display:block}
+.gallery-empty{color:#aab7c4;background:#151d2a;padding:20px;border-radius:10px}
+.similar{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.similar a{color:white;background:#151d2a;border:1px solid #283344;padding:16px;border-radius:10px;text-decoration:none}
+.similar a:hover{border-color:#20c99a;color:#20c99a}
+footer{text-align:center;padding:30px;color:#8f9baa;background:#101522;margin-top:45px;font-size:12px}
 @media(max-width:650px){
-.hero{grid-template-columns:1fr}
+.hero{grid-template-columns:1fr;gap:20px;padding:18px}
 .poster{max-width:230px}
-h1{font-size:27px}
+.details{grid-template-columns:1fr}
 .gallery{grid-template-columns:repeat(2,1fr)}
+.similar{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
+
 <body>
-<header><div class="logo">FLIXSTREAM</div></header>
+<header>
+<div class="logo">FLIX<span>STREAM</span></div>
+</header>
 
 <main>
 <a class="back" href="index.html">← Back to Movies</a>
@@ -44,12 +60,13 @@ h1{font-size:27px}
 <img class="poster" id="poster" src="" alt="Movie poster">
 
 <div>
+<div class="rating" id="rating"></div>
 <h1 id="title"></h1>
 <div class="meta" id="meta"></div>
-<p id="story"></p>
+<p class="story" id="story"></p>
 
 <div class="buttons">
-<a class="btn" id="trailer" target="_blank" rel="noopener">Watch Trailer</a>
+<a class="btn" id="trailer" target="_blank" rel="noopener">▶ Watch Trailer</a>
 <a class="btn secondary" id="watch" target="_blank" rel="noopener">Where to Watch</a>
 <button class="btn secondary" onclick="freeDownload()">Free Download</button>
 </div>
@@ -57,20 +74,43 @@ h1{font-size:27px}
 </div>
 
 <section>
-<h2>Movie Details</h2>
-<p id="details"></p>
+<h2>Movie Information</h2>
+<div class="details">
+<div class="detail">
+<strong>DIRECTOR</strong>
+<span id="director"></span>
+</div>
+<div class="detail">
+<strong>RELEASE YEAR</strong>
+<span id="year"></span>
+</div>
+<div class="detail">
+<strong>GENRE</strong>
+<span id="genre"></span>
+</div>
+<div class="detail">
+<strong>CAST</strong>
+<span id="cast"></span>
+</div>
+</div>
 </section>
 
 <section>
-<h2>Screenshots</h2>
+<h2>Movie Screenshots</h2>
 <div class="gallery" id="gallery"></div>
 </section>
 
 <section>
-<h2>Similar Movies</h2>
+<h2>You May Also Like</h2>
 <div class="similar" id="similar"></div>
 </section>
 </main>
+
+<footer>
+<strong>FLIXSTREAM</strong><br>
+Discover Movies. Watch. Enjoy.<br>
+© 2026 FLIXSTREAM
+</footer>
 
 <script>
 const movies={
@@ -82,10 +122,8 @@ rating:"8.7/10",
 director:"Christopher Nolan",
 cast:"Matthew McConaughey, Anne Hathaway, Jessica Chastain",
 story:"A team of explorers travels beyond this galaxy to discover whether mankind has a future among the stars.",
-poster:"https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-screenshots:[
-"https://image.tmdb.org/t/p/w780/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-]
+poster:"https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6M7C1g5h.jpg",
+screenshots:[]
 },
 dune:{
 title:"Dune",
@@ -118,9 +156,7 @@ director:"Christopher Nolan",
 cast:"Leonardo DiCaprio, Joseph Gordon-Levitt, Elliot Page",
 story:"A skilled thief enters people's dreams to steal secrets and is offered a chance to do something unusual.",
 poster:"https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
-screenshots:[
-"https://image.tmdb.org/t/p/w780/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg"
-]
+screenshots:[]
 }
 };
 
@@ -130,11 +166,13 @@ const movie=movies[key]||movies.interstellar;
 document.title="FLIXSTREAM | "+movie.title;
 document.getElementById("title").textContent=movie.title;
 document.getElementById("poster").src=movie.poster;
-document.getElementById("meta").textContent=
-movie.year+" • "+movie.genre+" • Rating: "+movie.rating;
+document.getElementById("rating").textContent="★ "+movie.rating;
+document.getElementById("meta").textContent=movie.year+" • "+movie.genre;
 document.getElementById("story").textContent=movie.story;
-document.getElementById("details").textContent=
-"Director: "+movie.director+" | Cast: "+movie.cast;
+document.getElementById("director").textContent=movie.director;
+document.getElementById("year").textContent=movie.year;
+document.getElementById("genre").textContent=movie.genre;
+document.getElementById("cast").textContent=movie.cast;
 
 document.getElementById("trailer").href=
 "https://www.youtube.com/results?search_query="+
@@ -145,6 +183,7 @@ document.getElementById("watch").href=
 encodeURIComponent(movie.title);
 
 const gallery=document.getElementById("gallery");
+
 if(movie.screenshots.length){
 movie.screenshots.forEach(src=>{
 const img=document.createElement("img");
@@ -153,21 +192,21 @@ img.alt=movie.title+" screenshot";
 gallery.appendChild(img);
 });
 }else{
-gallery.textContent="Screenshots will be added soon.";
+gallery.innerHTML='<div class="gallery-empty">Movie screenshots will be added soon.</div>';
 }
 
 const similar=document.getElementById("similar");
+
 Object.keys(movies).filter(k=>k!==key).forEach(k=>{
 const a=document.createElement("a");
 a.href="movie.html?movie="+k;
-a.textContent=movies[k].title;
+a.textContent=movies[k].title+" →";
 similar.appendChild(a);
 });
 
 function freeDownload(){
-alert("No verified official free download is available here yet. Please use legal sources only.");
+alert("Add your official and authorized download link here.");
 }
 </script>
 </body>
-  </html>
-  
+</html>
