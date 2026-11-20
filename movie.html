@@ -16,7 +16,9 @@ header{height:70px;padding:0 6%;display:flex;align-items:center;background:#1015
 main{max-width:1150px;margin:auto;padding:25px 5%}
 .back{color:#20d6a0;text-decoration:none;display:inline-block;margin:5px 0 25px}
 .hero{display:grid;grid-template-columns:280px 1fr;gap:35px;align-items:center;padding:25px;background:linear-gradient(120deg,#172638,#101520);border:1px solid #283546;border-radius:16px}
-.poster{width:100%;border-radius:12px;box-shadow:0 15px 35px #0009}
+.poster-box{width:100%;height:400px;background:#202b3a;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.poster{width:100%;height:100%;object-fit:cover;box-shadow:0 15px 35px #0009}
+.poster-placeholder{color:#20d6a0;font-size:22px;font-weight:bold;text-align:center;padding:15px}
 h1{font-size:clamp(30px,5vw,45px);margin:8px 0 15px}
 .meta{color:#b7c3d1;line-height:2}
 .rating{display:inline-block;background:#20c99a;color:#07130f;padding:8px 13px;border-radius:7px;font-weight:bold;margin:12px 0}
@@ -37,10 +39,11 @@ h2{font-size:22px;border-left:4px solid #20c99a;padding-left:12px;margin-bottom:
 .similar{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .similar a{color:white;background:#151d2a;border:1px solid #283344;padding:16px;border-radius:10px;text-decoration:none}
 .similar a:hover{border-color:#20c99a;color:#20c99a}
+.status{color:#aab7c4;padding:15px 0}
 footer{text-align:center;padding:30px;color:#8f9baa;background:#101522;margin-top:45px;font-size:12px}
 @media(max-width:650px){
 .hero{grid-template-columns:1fr;gap:20px;padding:18px}
-.poster{max-width:230px}
+.poster-box{max-width:230px;height:330px}
 .details{grid-template-columns:1fr}
 .gallery{grid-template-columns:repeat(2,1fr)}
 .similar{grid-template-columns:1fr 1fr}
@@ -57,18 +60,21 @@ footer{text-align:center;padding:30px;color:#8f9baa;background:#101522;margin-to
 <a class="back" href="index.html">← Back to Movies</a>
 
 <div class="hero">
-<img class="poster" id="poster" src="" alt="Movie poster">
+<div class="poster-box">
+<img class="poster" id="poster" alt="Movie poster" style="display:none">
+<div class="poster-placeholder" id="posterPlaceholder">FLIXSTREAM</div>
+</div>
 
 <div>
 <div class="rating" id="rating"></div>
-<h1 id="title"></h1>
+<h1 id="title">Loading Movie...</h1>
 <div class="meta" id="meta"></div>
 <p class="story" id="story"></p>
 
 <div class="buttons">
 <a class="btn" id="trailer" target="_blank" rel="noopener">▶ Watch Trailer</a>
 <a class="btn secondary" id="watch" target="_blank" rel="noopener">Where to Watch</a>
-<button class="btn secondary" onclick="freeDownload()">Free Download</button>
+<a class="btn secondary" id="download" target="_blank" rel="noopener" style="display:none">Free Download</a>
 </div>
 </div>
 </div>
@@ -76,22 +82,10 @@ footer{text-align:center;padding:30px;color:#8f9baa;background:#101522;margin-to
 <section>
 <h2>Movie Information</h2>
 <div class="details">
-<div class="detail">
-<strong>DIRECTOR</strong>
-<span id="director"></span>
-</div>
-<div class="detail">
-<strong>RELEASE YEAR</strong>
-<span id="year"></span>
-</div>
-<div class="detail">
-<strong>GENRE</strong>
-<span id="genre"></span>
-</div>
-<div class="detail">
-<strong>CAST</strong>
-<span id="cast"></span>
-</div>
+<div class="detail"><strong>DIRECTOR</strong><span id="director"></span></div>
+<div class="detail"><strong>RELEASE YEAR</strong><span id="year"></span></div>
+<div class="detail"><strong>GENRE</strong><span id="genre"></span></div>
+<div class="detail"><strong>CAST</strong><span id="cast"></span></div>
 </div>
 </section>
 
@@ -104,6 +98,7 @@ footer{text-align:center;padding:30px;color:#8f9baa;background:#101522;margin-to
 <h2>You May Also Like</h2>
 <div class="similar" id="similar"></div>
 </section>
+<div class="status" id="status"></div>
 </main>
 
 <footer>
@@ -112,101 +107,209 @@ Discover Movies. Watch. Enjoy.<br>
 © 2026 FLIXSTREAM
 </footer>
 
-<script>
-const movies={
-interstellar:{
-title:"Interstellar",
-year:"2014",
-genre:"Sci-Fi, Adventure, Drama",
-rating:"8.7/10",
-director:"Christopher Nolan",
-cast:"Matthew McConaughey, Anne Hathaway, Jessica Chastain",
-story:"A team of explorers travels beyond this galaxy to discover whether mankind has a future among the stars.",
-poster:"https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6M7C1g5h.jpg",
-screenshots:[]
-},
-dune:{
-title:"Dune",
-year:"2021",
-genre:"Sci-Fi, Adventure",
-rating:"8.0/10",
-director:"Denis Villeneuve",
-cast:"Timothée Chalamet, Rebecca Ferguson, Zendaya",
-story:"A young man travels to a dangerous desert planet to protect his family and his people.",
-poster:"https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
-screenshots:[]
-},
-spiderman:{
-title:"Spider-Man: No Way Home",
-year:"2021",
-genre:"Action, Adventure, Sci-Fi",
-rating:"8.2/10",
-director:"Jon Watts",
-cast:"Tom Holland, Zendaya, Benedict Cumberbatch",
-story:"Peter Parker asks for help after his identity as Spider-Man is revealed, but things take an unexpected turn.",
-poster:"https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
-screenshots:[]
-},
-inception:{
-title:"Inception",
-year:"2010",
-genre:"Sci-Fi, Action, Thriller",
-rating:"8.8/10",
-director:"Christopher Nolan",
-cast:"Leonardo DiCaprio, Joseph Gordon-Levitt, Elliot Page",
-story:"A skilled thief enters people's dreams to steal secrets and is offered a chance to do something unusual.",
-poster:"https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
-screenshots:[]
-}
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA6Boo_uo8Ttw9GXd0GB16f6VTucF0s904",
+  authDomain: "flixstream-b6d48.firebaseapp.com",
+  projectId: "flixstream-b6d48",
+  storageBucket: "flixstream-b6d48.firebasestorage.app",
+  messagingSenderId: "161127372124",
+  appId: "1:161127372124:web:5c91328cf68bd2b8021d99"
 };
 
-const key=new URLSearchParams(location.search).get("movie")||"interstellar";
-const movie=movies[key]||movies.interstellar;
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-document.title="FLIXSTREAM | "+movie.title;
-document.getElementById("title").textContent=movie.title;
-document.getElementById("poster").src=movie.poster;
-document.getElementById("rating").textContent="★ "+movie.rating;
-document.getElementById("meta").textContent=movie.year+" • "+movie.genre;
-document.getElementById("story").textContent=movie.story;
-document.getElementById("director").textContent=movie.director;
-document.getElementById("year").textContent=movie.year;
-document.getElementById("genre").textContent=movie.genre;
-document.getElementById("cast").textContent=movie.cast;
+const movies = {
+  interstellar:{
+    title:"Interstellar",year:"2014",
+    genre:"Sci-Fi, Adventure, Drama",rating:"8.7/10",
+    director:"Christopher Nolan",
+    cast:"Matthew McConaughey, Anne Hathaway, Jessica Chastain",
+    story:"A team of explorers travels beyond this galaxy to discover whether mankind has a future among the stars.",
+    poster:"https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6M7C1g5h.jpg",
+    screenshots:[]
+  },
+  dune:{
+    title:"Dune",year:"2021",
+    genre:"Sci-Fi, Adventure",rating:"8.0/10",
+    director:"Denis Villeneuve",
+    cast:"Timothée Chalamet, Rebecca Ferguson, Zendaya",
+    story:"A young man travels to a dangerous desert planet to protect his family and his people.",
+    poster:"https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
+    screenshots:[]
+  },
+  spiderman:{
+    title:"Spider-Man: No Way Home",year:"2021",
+    genre:"Action, Adventure, Sci-Fi",rating:"8.2/10",
+    director:"Jon Watts",
+    cast:"Tom Holland, Zendaya, Benedict Cumberbatch",
+    story:"Peter Parker asks for help after his identity as Spider-Man is revealed, but things take an unexpected turn.",
+    poster:"https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
+    screenshots:[]
+  },
+  inception:{
+    title:"Inception",year:"2010",
+    genre:"Sci-Fi, Action, Thriller",rating:"8.8/10",
+    director:"Christopher Nolan",
+    cast:"Leonardo DiCaprio, Joseph Gordon-Levitt, Elliot Page",
+    story:"A skilled thief enters people's dreams to steal secrets and is offered a chance to do something unusual.",
+    poster:"https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
+    screenshots:[]
+  }
+};
 
-document.getElementById("trailer").href=
-"https://www.youtube.com/results?search_query="+
-encodeURIComponent(movie.title+" official trailer");
+const key = new URLSearchParams(location.search).get("movie") || "interstellar";
 
-document.getElementById("watch").href=
-"https://www.justwatch.com/in/search?q="+
-encodeURIComponent(movie.title);
-
-const gallery=document.getElementById("gallery");
-
-if(movie.screenshots.length){
-movie.screenshots.forEach(src=>{
-const img=document.createElement("img");
-img.src=src;
-img.alt=movie.title+" screenshot";
-gallery.appendChild(img);
-});
-}else{
-gallery.innerHTML='<div class="gallery-empty">Movie screenshots will be added soon.</div>';
+function text(id,value){
+  document.getElementById(id).textContent = value || "Not available";
 }
 
-const similar=document.getElementById("similar");
-
-Object.keys(movies).filter(k=>k!==key).forEach(k=>{
-const a=document.createElement("a");
-a.href="movie.html?movie="+k;
-a.textContent=movies[k].title+" →";
-similar.appendChild(a);
-});
-
-function freeDownload(){
-alert("Add your official and authorized download link here.");
+function safeUrl(value){
+  try{
+    const url = new URL(String(value || ""));
+    if(url.protocol === "https:" || url.protocol === "http:") return url.href;
+  }catch(e){}
+  return "";
 }
+
+function showMovie(movie){
+  document.title = "FLIXSTREAM | " + movie.title;
+
+  text("title",movie.title);
+  text("rating",movie.rating ? "★ " + movie.rating : "Rating unavailable");
+  text("meta",[movie.year,movie.genre].filter(Boolean).join(" • "));
+  text("story",movie.story);
+  text("director",movie.director);
+  text("year",movie.year);
+  text("genre",movie.genre);
+  text("cast",Array.isArray(movie.cast) ? movie.cast.join(", ") : movie.cast);
+
+  const poster = safeUrl(movie.poster);
+  const posterImage = document.getElementById("poster");
+  const placeholder = document.getElementById("posterPlaceholder");
+
+  if(poster){
+    posterImage.src = poster;
+    posterImage.style.display = "block";
+    placeholder.style.display = "none";
+    posterImage.onerror = () => {
+      posterImage.style.display = "none";
+      placeholder.style.display = "block";
+    };
+  }else{
+    posterImage.style.display = "none";
+    placeholder.style.display = "block";
+  }
+
+  const trailer = safeUrl(movie.trailer || movie.trailerUrl);
+  const watch = safeUrl(movie.watch || movie.watchUrl);
+
+  document.getElementById("trailer").href =
+    trailer || "https://www.youtube.com/results?search_query=" +
+    encodeURIComponent(movie.title + " official trailer");
+
+  document.getElementById("watch").href =
+    watch || "https://www.justwatch.com/in/search?q=" +
+    encodeURIComponent(movie.title);
+
+  const download = safeUrl(movie.downloadLink || movie.download);
+  const downloadButton = document.getElementById("download");
+
+  if(download){
+    downloadButton.href = download;
+    downloadButton.style.display = "inline-block";
+  }else{
+    downloadButton.style.display = "none";
+  }
+
+  const gallery = document.getElementById("gallery");
+  gallery.replaceChildren();
+
+  const screenshots = Array.isArray(movie.screenshots)
+    ? movie.screenshots : [];
+
+  const validScreenshots = screenshots.map(safeUrl).filter(Boolean);
+
+  if(validScreenshots.length){
+    validScreenshots.forEach(src => {
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = movie.title + " screenshot";
+      img.loading = "lazy";
+      gallery.appendChild(img);
+    });
+  }else{
+    const empty = document.createElement("div");
+    empty.className = "gallery-empty";
+    empty.textContent = "Movie screenshots will be added soon.";
+    gallery.appendChild(empty);
+  }
+
+  const similar = document.getElementById("similar");
+  similar.replaceChildren();
+
+  Object.keys(movies).filter(k => k !== key).forEach(k => {
+    const a = document.createElement("a");
+    a.href = "movie.html?movie=" + encodeURIComponent(k);
+    a.textContent = movies[k].title + " →";
+    similar.appendChild(a);
+  });
+}
+
+async function loadMovie(){
+  try{
+    const movieRef = doc(db,"movies",key);
+    const movieSnap = await getDoc(movieRef);
+
+    if(movieSnap.exists()){
+      const data = movieSnap.data();
+
+      const movie = {
+        title:data.title || data.name || "Untitled Movie",
+        year:data.year || data.releaseYear || "",
+        genre:data.genre || "",
+        rating:data.rating || "",
+        director:data.director || "",
+        cast:data.cast || "",
+        story:data.story || "",
+        poster:data.poster || data.posterUrl || "",
+        screenshots:data.screenshots || [],
+        trailer:data.trailer || data.trailerUrl || "",
+        watch:data.watch || data.watchUrl || "",
+        downloadLink:data.downloadLink || ""
+      };
+
+      showMovie(movie);
+      text("status","");
+    }else if(movies[key]){
+      showMovie(movies[key]);
+      text("status","");
+    }else{
+      text("title","Movie Not Found");
+      text("status","This movie is not available. Please return to the homepage.");
+    }
+  }catch(error){
+    console.error("Firebase movie error:",error);
+
+    if(movies[key]){
+      showMovie(movies[key]);
+      text("status","Showing saved movie information. Online details could not be loaded.");
+    }else{
+      text("title","Unable to Load Movie");
+      text("status","Please check your internet connection and try again.");
+    }
+  }
+}
+
+loadMovie();
 </script>
 </body>
 </html>
