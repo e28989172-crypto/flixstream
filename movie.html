@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLIXSTREAM | Movie Details</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d12;color:white;font-family:Arial,sans-serif}
+header{padding:20px 6%;background:#101820;border-bottom:1px solid #26343d}
+.logo{color:#20c99a;font-size:25px;font-weight:bold}
+main{max-width:1100px;margin:auto;padding:25px 5%}
+.back{color:#20c99a;text-decoration:none;display:inline-block;margin-bottom:25px}
+.hero{display:grid;grid-template-columns:260px 1fr;gap:30px}
+.poster{width:100%;border-radius:12px}
+h1{font-size:34px;margin:5px 0 12px}
+.meta{color:#aab7c0;line-height:1.8}
+p{line-height:1.7;color:#c7d0d6}
+.buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.btn{padding:13px 18px;border-radius:7px;background:#20c99a;color:#06120e;text-decoration:none;font-weight:bold;border:0;cursor:pointer}
+.btn.secondary{background:#26343d;color:white}
+section{margin-top:35px}
+h2{border-left:4px solid #20c99a;padding-left:12px}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.gallery img{width:100%;border-radius:9px}
+.similar{display:flex;gap:12px;flex-wrap:wrap}
+.similar a{color:#20c99a;background:#15212a;padding:12px;border-radius:8px;text-decoration:none}
+@media(max-width:650px){
+.hero{grid-template-columns:1fr}
+.poster{max-width:230px}
+h1{font-size:27px}
+.gallery{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<header><div class="logo">FLIXSTREAM</div></header>
+
+<main>
+<a class="back" href="index.html">← Back to Movies</a>
+
+<div class="hero">
+<img class="poster" id="poster" src="" alt="Movie poster">
+
+<div>
+<h1 id="title"></h1>
+<div class="meta" id="meta"></div>
+<p id="story"></p>
+
+<div class="buttons">
+<a class="btn" id="trailer" target="_blank" rel="noopener">Watch Trailer</a>
+<a class="btn secondary" id="watch" target="_blank" rel="noopener">Where to Watch</a>
+<button class="btn secondary" onclick="freeDownload()">Free Download</button>
+</div>
+</div>
+</div>
+
+<section>
+<h2>Movie Details</h2>
+<p id="details"></p>
+</section>
+
+<section>
+<h2>Screenshots</h2>
+<div class="gallery" id="gallery"></div>
+</section>
+
+<section>
+<h2>Similar Movies</h2>
+<div class="similar" id="similar"></div>
+</section>
+</main>
+
+<script>
+const movies={
+interstellar:{
+title:"Interstellar",
+year:"2014",
+genre:"Sci-Fi, Adventure, Drama",
+rating:"8.7/10",
+director:"Christopher Nolan",
+cast:"Matthew McConaughey, Anne Hathaway, Jessica Chastain",
+story:"A team of explorers travels beyond this galaxy to discover whether mankind has a future among the stars.",
+poster:"https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+screenshots:[
+"https://image.tmdb.org/t/p/w780/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
+]
+},
+dune:{
+title:"Dune",
+year:"2021",
+genre:"Sci-Fi, Adventure",
+rating:"8.0/10",
+director:"Denis Villeneuve",
+cast:"Timothée Chalamet, Rebecca Ferguson, Zendaya",
+story:"A young man travels to a dangerous desert planet to protect his family and his people.",
+poster:"https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
+screenshots:[]
+},
+spiderman:{
+title:"Spider-Man: No Way Home",
+year:"2021",
+genre:"Action, Adventure, Sci-Fi",
+rating:"8.2/10",
+director:"Jon Watts",
+cast:"Tom Holland, Zendaya, Benedict Cumberbatch",
+story:"Peter Parker asks for help after his identity as Spider-Man is revealed, but things take an unexpected turn.",
+poster:"https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
+screenshots:[]
+},
+inception:{
+title:"Inception",
+year:"2010",
+genre:"Sci-Fi, Action, Thriller",
+rating:"8.8/10",
+director:"Christopher Nolan",
+cast:"Leonardo DiCaprio, Joseph Gordon-Levitt, Elliot Page",
+story:"A skilled thief enters people's dreams to steal secrets and is offered a chance to do something unusual.",
+poster:"https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
+screenshots:[
+"https://image.tmdb.org/t/p/w780/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg"
+]
+}
+};
+
+const key=new URLSearchParams(location.search).get("movie")||"interstellar";
+const movie=movies[key]||movies.interstellar;
+
+document.title="FLIXSTREAM | "+movie.title;
+document.getElementById("title").textContent=movie.title;
+document.getElementById("poster").src=movie.poster;
+document.getElementById("meta").textContent=
+movie.year+" • "+movie.genre+" • Rating: "+movie.rating;
+document.getElementById("story").textContent=movie.story;
+document.getElementById("details").textContent=
+"Director: "+movie.director+" | Cast: "+movie.cast;
+
+document.getElementById("trailer").href=
+"https://www.youtube.com/results?search_query="+
+encodeURIComponent(movie.title+" official trailer");
+
+document.getElementById("watch").href=
+"https://www.justwatch.com/in/search?q="+
+encodeURIComponent(movie.title);
+
+const gallery=document.getElementById("gallery");
+if(movie.screenshots.length){
+movie.screenshots.forEach(src=>{
+const img=document.createElement("img");
+img.src=src;
+img.alt=movie.title+" screenshot";
+gallery.appendChild(img);
+});
+}else{
+gallery.textContent="Screenshots will be added soon.";
+}
+
+const similar=document.getElementById("similar");
+Object.keys(movies).filter(k=>k!==key).forEach(k=>{
+const a=document.createElement("a");
+a.href="movie.html?movie="+k;
+a.textContent=movies[k].title;
+similar.appendChild(a);
+});
+
+function freeDownload(){
+alert("No verified official free download is available here yet. Please use legal sources only.");
+}
+</script>
+</body>
+  </html>
+  
