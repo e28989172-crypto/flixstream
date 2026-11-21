@@ -5,263 +5,307 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080d12">
+<meta name="description" content="FLIXSTREAM Admin Dashboard">
 <title>FLIXSTREAM Admin</title>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d12;color:white;font-family:Arial,sans-serif}
-header{padding:18px;background:#101a20;border-bottom:1px solid #20c99a}
+body{
+ margin:0;background:#080d12;color:white;
+ font-family:Arial,sans-serif
+}
+header{
+ padding:18px;background:#101a20;
+ border-bottom:1px solid #20c99a
+}
 header h2{margin:0;color:#20c99a}
 .container{max-width:850px;margin:auto;padding:18px}
-.card{background:#121d24;padding:20px;border-radius:12px;margin:16px 0}
+.card{
+ background:#121d24;padding:20px;
+ border-radius:12px;margin:16px 0
+}
 h1{font-size:25px}
 h3{color:#20c99a}
 input,textarea,select{
-width:100%;padding:13px;margin:7px 0;background:#080d12;
-border:1px solid #34434b;border-radius:7px;color:white
+ width:100%;padding:13px;margin:7px 0;
+ background:#080d12;border:1px solid #34434b;
+ border-radius:7px;color:white;font-size:15px
 }
 textarea{min-height:85px;resize:vertical}
 button{
-background:#20c99a;color:#06120e;border:0;padding:11px 16px;
-border-radius:7px;font-weight:bold;margin:5px;cursor:pointer
+ background:#20c99a;color:#06120e;
+ border:0;padding:11px 16px;border-radius:7px;
+ font-weight:bold;margin:5px;cursor:pointer
 }
+button:disabled{opacity:.55;cursor:not-allowed}
 button.danger{background:#e34d5b;color:white}
 button.secondary{background:#34434b;color:white}
 .note{color:#aab8bf;font-size:13px;line-height:1.5}
-.movie{border:1px solid #34434b;padding:14px;border-radius:9px;margin:12px 0}
+.movie{
+ border:1px solid #34434b;padding:14px;
+ border-radius:9px;margin:12px 0
+}
 .movie h3{margin:0 0 8px}
 #dashboard{display:none}
 #message{color:#ffb6b6;white-space:pre-wrap}
-#status{color:#20c99a}
+#status{color:#20c99a;white-space:pre-wrap}
 .preview{
-width:100%;max-height:260px;object-fit:contain;
-background:#080d12;border-radius:8px;margin-top:10px
+ width:100%;max-height:260px;object-fit:contain;
+ background:#080d12;border-radius:8px;margin-top:10px
 }
 .preview-frame{
-width:100%;aspect-ratio:16/9;border:0;border-radius:8px;
-margin-top:10px;background:#080d12
+ width:100%;aspect-ratio:16/9;border:0;
+ border-radius:8px;margin-top:10px;background:#080d12
 }
-.field-label{display:block;color:#20c99a;margin-top:12px;font-size:14px}
-.checkrow{display:flex;align-items:center;gap:10px;margin:12px 0}
-.checkrow input{width:auto;margin:0;accent-color:#20c99a}
-
-/* THEME MANAGER */
+.field-label{
+ display:block;color:#20c99a;
+ margin-top:12px;font-size:14px
+}
+.checkrow{
+ display:flex;align-items:center;gap:10px;margin:12px 0
+}
+.checkrow input{
+ width:auto;margin:0;accent-color:#20c99a
+}
 .theme-options{
-display:grid;
-grid-template-columns:repeat(2,minmax(0,1fr));
-gap:10px;
-margin:15px 0;
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:10px;margin:15px 0
 }
 .theme-option{
-border:1px solid #34434b;
-border-radius:10px;
-padding:12px;
-background:#080d12;
+ border:1px solid #34434b;border-radius:10px;
+ padding:12px;background:#080d12;cursor:pointer
 }
 .theme-option strong{display:block;margin-bottom:8px}
 .theme-colors{display:flex;gap:5px}
-.theme-colors span{
-height:24px;flex:1;border-radius:5px;
-}
+.theme-colors span{height:24px;flex:1;border-radius:5px}
 .theme-option.selected{border:2px solid #20c99a}
 .theme-current{
-padding:12px;
-background:#080d12;
-border-radius:8px;
-border:1px solid #34434b;
-color:#20c99a;
-margin:12px 0;
+ padding:12px;background:#080d12;border-radius:8px;
+ border:1px solid #34434b;color:#20c99a;margin:12px 0
 }
+.status-error{color:#ff9999}
+.status-success{color:#20c99a}
 @media(max-width:480px){
-.container{padding:10px}
-.card{padding:15px}
-.theme-options{grid-template-columns:1fr 1fr}
+ .container{padding:10px}
+ .card{padding:15px}
+ .theme-options{grid-template-columns:1fr 1fr}
+ button{padding:11px 13px}
 }
 </style>
 </head>
 
 <body>
-<header><h2>FLIXSTREAM ADMIN</h2></header>
+
+<header>
+ <h2>FLIXSTREAM ADMIN</h2>
+</header>
 
 <div class="container">
 
+<!-- LOGIN -->
 <div class="card" id="loginBox">
-<h1>Admin Login 🔐</h1>
-<input id="email" type="email" placeholder="Admin Email">
-<input id="password" type="password" placeholder="Password">
-<button id="loginBtn">Login</button>
-<p id="message"></p>
+ <h1>Admin Login 🔐</h1>
+ <p class="note">Login using your registered admin email and password.</p>
+
+ <form id="loginForm">
+  <input id="email" type="email" placeholder="Admin Email"
+   autocomplete="username" required>
+  <input id="password" type="password" placeholder="Password"
+   autocomplete="current-password" required>
+  <button id="loginBtn" type="submit">Login</button>
+ </form>
+
+ <p id="message" aria-live="polite"></p>
 </div>
 
+<!-- DASHBOARD -->
 <div id="dashboard">
 
-<h1>Website Management ⚙️</h1>
-<p class="note">Manage your website themes, popup and movies.</p>
-<p id="status"></p>
+ <h1>Website Management ⚙️</h1>
+ <p class="note">Manage your website themes, popup and movies.</p>
+ <p id="status" aria-live="polite"></p>
 
-<!-- WEBSITE THEME MANAGER -->
-<div class="card">
-<h1>Website Theme Manager 🎨</h1>
-<p class="note">Choose a theme and apply it to the entire FLIXSTREAM website.</p>
+ <!-- THEME MANAGER -->
+ <div class="card">
+  <h1>Website Theme Manager 🎨</h1>
+  <p class="note">
+   Choose a theme and apply it to the entire FLIXSTREAM website.
+  </p>
 
-<div class="theme-current">
-Currently selected theme:
-<strong id="currentThemeLabel">Loading...</strong>
+  <div class="theme-current">
+   Currently selected theme:
+   <strong id="currentThemeLabel">Loading...</strong>
+  </div>
+
+  <label class="field-label" for="themeChoice">Choose Website Theme</label>
+  <select id="themeChoice">
+   <option value="default">Default - Emerald Green</option>
+   <option value="summer">☀️ Summer - Fresh Cyan</option>
+   <option value="winter">❄️ Winter - Icy Blue</option>
+   <option value="diwali">🪔 Diwali - Golden Lights</option>
+   <option value="christmas">🎄 Christmas - Red & Green</option>
+   <option value="holi">🎨 Holi - Colorful</option>
+  </select>
+
+  <div class="theme-options">
+   <div class="theme-option" data-theme-card="default" role="button" tabindex="0">
+    <strong>Default 💚</strong>
+    <div class="theme-colors">
+     <span style="background:#080b12"></span>
+     <span style="background:#111522"></span>
+     <span style="background:#20c99a"></span>
+    </div>
+   </div>
+
+   <div class="theme-option" data-theme-card="summer" role="button" tabindex="0">
+    <strong>Summer ☀️</strong>
+    <div class="theme-colors">
+     <span style="background:#07151b"></span>
+     <span style="background:#0d2630"></span>
+     <span style="background:#22d3ee"></span>
+    </div>
+   </div>
+
+   <div class="theme-option" data-theme-card="winter" role="button" tabindex="0">
+    <strong>Winter ❄️</strong>
+    <div class="theme-colors">
+     <span style="background:#081321"></span>
+     <span style="background:#101f32"></span>
+     <span style="background:#60baf5"></span>
+    </div>
+   </div>
+
+   <div class="theme-option" data-theme-card="diwali" role="button" tabindex="0">
+    <strong>Diwali 🪔</strong>
+    <div class="theme-colors">
+     <span style="background:#160d08"></span>
+     <span style="background:#24140c"></span>
+     <span style="background:#f5b942"></span>
+    </div>
+   </div>
+
+   <div class="theme-option" data-theme-card="christmas" role="button" tabindex="0">
+    <strong>Christmas 🎄</strong>
+    <div class="theme-colors">
+     <span style="background:#08130e"></span>
+     <span style="background:#102019"></span>
+     <span style="background:#e34b55"></span>
+    </div>
+   </div>
+
+   <div class="theme-option" data-theme-card="holi" role="button" tabindex="0">
+    <strong>Holi 🎨</strong>
+    <div class="theme-colors">
+     <span style="background:#130b1c"></span>
+     <span style="background:#21122e"></span>
+     <span style="background:#d65cff"></span>
+    </div>
+   </div>
+  </div>
+
+  <button id="applyThemeBtn">Apply Theme 🌟</button>
+  <button id="resetThemeBtn" class="secondary">Reset to Default</button>
+  <p id="themeStatus" class="note" aria-live="polite"></p>
+ </div>
+
+ <!-- POPUP MANAGER -->
+ <div class="card">
+  <h1>Website Popup Manager 📢</h1>
+  <p class="note">
+   Choose an image, MP4 video or YouTube video for your website popup.
+  </p>
+
+  <label class="field-label" for="popupType">Select Media Type</label>
+  <select id="popupType">
+   <option value="image">Image</option>
+   <option value="video">Direct MP4 Video</option>
+   <option value="youtube">YouTube Video</option>
+  </select>
+
+  <label class="field-label" for="popupMedia">Image / Video / YouTube URL</label>
+  <input id="popupMedia" type="url" placeholder="Paste your media link">
+
+  <p class="note">
+   YouTube: paste a normal video link.
+   Direct video: use a browser-playable MP4 link.
+  </p>
+
+  <label class="field-label" for="popupDestination">Destination URL (Optional)</label>
+  <input id="popupDestination" type="url"
+   placeholder="Where should visitors go after clicking?">
+
+  <div class="checkrow">
+   <input type="checkbox" id="popupEnabled">
+   <label for="popupEnabled">Enable Website Popup</label>
+  </div>
+
+  <div id="popupPreviewBox" style="display:none">
+   <p class="note">Media Preview</p>
+   <div id="popupPreview"></div>
+  </div>
+
+  <button id="previewPopupBtn" class="secondary">Preview Media</button>
+  <button id="savePopupBtn">Save Popup Settings</button>
+  <button id="disablePopupBtn" class="danger">Turn Popup OFF</button>
+
+  <p id="popupStatus" class="note" aria-live="polite"></p>
+ </div>
+
+ <!-- MOVIE FORM -->
+ <div class="card">
+  <h3 id="formTitle">Add New Movie</h3>
+
+  <input id="movieTitle" placeholder="Movie Name *">
+  <input id="movieId" placeholder="Movie ID (automatic if empty)">
+  <input id="year" placeholder="Release Year">
+  <input id="genre" placeholder="Genre">
+  <input id="rating" placeholder="Rating (example: 8.5/10)">
+  <input id="director" placeholder="Director">
+  <input id="cast" placeholder="Cast (comma separated)">
+  <textarea id="story" placeholder="Movie Story / Description"></textarea>
+  <input id="poster" placeholder="Poster Image URL">
+  <textarea id="screenshots" placeholder="Screenshot URLs (comma separated)"></textarea>
+  <input id="trailer" placeholder="Official Trailer URL">
+  <input id="watchLink" placeholder="Official Watch URL">
+  <input id="downloadLink" placeholder="Authorized Download URL">
+
+  <button id="saveBtn">Save Movie</button>
+  <button id="clearBtn" class="secondary">Clear Form</button>
+ </div>
+
+ <!-- MOVIE LIST -->
+ <div class="card">
+  <h3>All Movies</h3>
+  <div id="movieList">Loading movies...</div>
+ </div>
+
+ <button id="logoutBtn" class="danger">Logout</button>
 </div>
 
-<label class="field-label">Choose Website Theme</label>
-<select id="themeChoice">
-<option value="default">Default - Emerald Green</option>
-<option value="summer">☀️ Summer - Fresh Cyan</option>
-<option value="winter">❄️ Winter - Icy Blue</option>
-<option value="diwali">🪔 Diwali - Golden Lights</option>
-<option value="christmas">🎄 Christmas - Red & Green</option>
-<option value="holi">🎨 Holi - Colorful</option>
-</select>
-
-<div class="theme-options">
-<div class="theme-option" data-theme-card="default">
-<strong>Default 💚</strong>
-<div class="theme-colors">
-<span style="background:#080b12"></span>
-<span style="background:#111522"></span>
-<span style="background:#20c99a"></span>
-</div>
-</div>
-
-<div class="theme-option" data-theme-card="summer">
-<strong>Summer ☀️</strong>
-<div class="theme-colors">
-<span style="background:#07151b"></span>
-<span style="background:#0d2630"></span>
-<span style="background:#22d3ee"></span>
-</div>
-</div>
-
-<div class="theme-option" data-theme-card="winter">
-<strong>Winter ❄️</strong>
-<div class="theme-colors">
-<span style="background:#081321"></span>
-<span style="background:#101f32"></span>
-<span style="background:#60baf5"></span>
-</div>
-</div>
-
-<div class="theme-option" data-theme-card="diwali">
-<strong>Diwali 🪔</strong>
-<div class="theme-colors">
-<span style="background:#160d08"></span>
-<span style="background:#24140c"></span>
-<span style="background:#f5b942"></span>
-</div>
-</div>
-
-<div class="theme-option" data-theme-card="christmas">
-<strong>Christmas 🎄</strong>
-<div class="theme-colors">
-<span style="background:#08130e"></span>
-<span style="background:#102019"></span>
-<span style="background:#e34b55"></span>
-</div>
-</div>
-
-<div class="theme-option" data-theme-card="holi">
-<strong>Holi 🎨</strong>
-<div class="theme-colors">
-<span style="background:#130b1c"></span>
-<span style="background:#21122e"></span>
-<span style="background:#d65cff"></span>
-</div>
-</div>
-</div>
-
-<button id="applyThemeBtn">Apply Theme 🌟</button>
-<button id="resetThemeBtn" class="secondary">Reset to Default</button>
-<p id="themeStatus" class="note"></p>
-</div>
-
-<!-- POPUP MANAGER -->
-<div class="card">
-<h1>Website Popup Manager 📢</h1>
-<p class="note">Choose an image, MP4 video or YouTube video for your website popup.</p>
-
-<label class="field-label">Select Media Type</label>
-<select id="popupType">
-<option value="image">Image</option>
-<option value="video">Direct MP4 Video</option>
-<option value="youtube">YouTube Video</option>
-</select>
-
-<label class="field-label">Image / Video / YouTube URL</label>
-<input id="popupMedia" type="url" placeholder="Paste your media link">
-
-<p class="note">
-For YouTube, paste the normal video link. Example: youtube.com/watch?v=...
-For direct video, use a browser-playable MP4 link.
-</p>
-
-<label class="field-label">Destination URL (Optional)</label>
-<input id="popupDestination" type="url" placeholder="Where should visitors go after clicking?">
-
-<div class="checkrow">
-<input type="checkbox" id="popupEnabled">
-<label for="popupEnabled">Enable Website Popup</label>
-</div>
-
-<div id="popupPreviewBox" style="display:none">
-<p class="note">Media Preview</p>
-<div id="popupPreview"></div>
-</div>
-
-<button id="previewPopupBtn" class="secondary">Preview Media</button>
-<button id="savePopupBtn">Save Popup Settings</button>
-<button id="disablePopupBtn" class="danger">Turn Popup OFF</button>
-
-<p id="popupStatus" class="note"></p>
-</div>
-
-<!-- MOVIE FORM -->
-<div class="card">
-<h3 id="formTitle">Add New Movie</h3>
-<input id="movieTitle" placeholder="Movie Name *">
-<input id="movieId" placeholder="Movie ID (automatic if empty)">
-<input id="year" placeholder="Release Year">
-<input id="genre" placeholder="Genre">
-<input id="rating" placeholder="Rating (example: 8.5/10)">
-<input id="director" placeholder="Director">
-<input id="cast" placeholder="Cast (comma separated)">
-<textarea id="story" placeholder="Movie Story / Description"></textarea>
-<input id="poster" placeholder="Poster Image URL">
-<textarea id="screenshots" placeholder="Screenshot URLs (comma separated)"></textarea>
-<input id="trailer" placeholder="Official Trailer URL">
-<input id="watchLink" placeholder="Official Watch URL">
-<input id="downloadLink" placeholder="Authorized Download URL">
-
-<button id="saveBtn">Save Movie</button>
-<button id="clearBtn" class="secondary">Clear Form</button>
-</div>
-
-<div class="card">
-<h3>All Movies</h3>
-<div id="movieList">Loading movies...</div>
-</div>
-
-<button id="logoutBtn" class="danger">Logout</button>
-</div>
 </div>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
 import {
- getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut
+ getAuth,
+ signInWithEmailAndPassword,
+ onAuthStateChanged,
+ signOut
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
 import {
- getFirestore,collection,getDocs,doc,setDoc,deleteDoc,
- getDoc,serverTimestamp
+ getFirestore,
+ collection,
+ getDocs,
+ doc,
+ setDoc,
+ deleteDoc,
+ getDoc,
+ serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
+/* FIREBASE CONFIG */
 const firebaseConfig = {
  apiKey: "AIzaSyA6Boo_uo8Ttw9GXd0GB16f6VTucF0s904",
  authDomain: "flixstream-b6d48.firebaseapp.com",
@@ -276,42 +320,110 @@ const ADMIN_UID = "g9j2r2DbtIYxNkXupeJyoRL9qUC3";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
 const $ = id => document.getElementById(id);
 
 let editingId = null;
+let dashboardUser = null;
 
-$("loginBtn").onclick = async () => {
- $("message").textContent = "Please wait...";
- try {
-  await signInWithEmailAndPassword(
-   auth,$("email").value.trim(),$("password").value
-  );
-  $("password").value = "";
- } catch(error) {
-  $("message").textContent = "Login failed: " + error.message;
+function setMessage(id,message,isError=false){
+ const element=$(id);
+ element.textContent=message;
+ element.className=isError?"note status-error":"note status-success";
+}
+
+function validUrl(value){
+ try{
+  const url=new URL(value.trim());
+  return url.protocol==="https:" || url.protocol==="http:";
+ }catch(error){
+  return false;
  }
-};
+}
 
-onAuthStateChanged(auth,async user => {
- if(user && user.uid === ADMIN_UID) {
-  $("loginBox").style.display = "none";
-  $("dashboard").style.display = "block";
-  $("message").textContent = "";
-  await loadThemeSettings();
-  await loadMovies();
-  await loadPopupSettings();
- } else {
-  $("loginBox").style.display = "block";
-  $("dashboard").style.display = "none";
-  if(user) await signOut(auth);
+/* LOGIN */
+$("loginForm").addEventListener("submit",async event=>{
+ event.preventDefault();
+
+ const email=$("email").value.trim();
+ const password=$("password").value;
+
+ if(!email || !password){
+  $("message").textContent="Please enter your email and password.";
+  return;
+ }
+
+ $("loginBtn").disabled=true;
+ $("loginBtn").textContent="Logging in...";
+ $("message").textContent="Please wait...";
+
+ try{
+  const result=await signInWithEmailAndPassword(auth,email,password);
+
+  if(result.user.uid!==ADMIN_UID){
+   await signOut(auth);
+   $("message").textContent="This account is not authorized as FLIXSTREAM admin.";
+  }else{
+   $("password").value="";
+   $("message").textContent="Login successful. Loading dashboard...";
+  }
+ }catch(error){
+  let message=error.message;
+
+  if(error.code==="auth/invalid-credential" ||
+     error.code==="auth/wrong-password" ||
+     error.code==="auth/user-not-found"){
+   message="Email or password is incorrect.";
+  }else if(error.code==="auth/too-many-requests"){
+   message="Too many attempts. Please wait and try again.";
+  }else if(error.code==="auth/network-request-failed"){
+   message="Internet connection problem. Please check your internet.";
+  }
+
+  $("message").textContent="Login failed: "+message;
+ }finally{
+  $("loginBtn").disabled=false;
+  $("loginBtn").textContent="Login";
  }
 });
 
-/* WEBSITE THEME MANAGER */
+/* AUTH STATE */
+onAuthStateChanged(auth,async user=>{
+ if(user && user.uid===ADMIN_UID){
+  dashboardUser=user;
+  $("loginBox").style.display="none";
+  $("dashboard").style.display="block";
+  $("message").textContent="";
 
-const themeRef = doc(db,"siteSettings","theme");
+  $("status").textContent="Admin connected.";
 
-const themeNames = {
+  await loadThemeSettings();
+  await loadMovies();
+  await loadPopupSettings();
+
+ }else{
+  dashboardUser=null;
+  $("loginBox").style.display="block";
+  $("dashboard").style.display="none";
+
+  if(user){
+   await signOut(auth);
+   $("message").textContent="This account does not have admin access.";
+  }
+ }
+});
+
+/* ADMIN CHECK */
+function isAdmin(){
+ return !!auth.currentUser &&
+  auth.currentUser.uid===ADMIN_UID &&
+  !!dashboardUser;
+}
+
+/* THEME MANAGER */
+const themeRef=doc(db,"siteSettings","theme");
+
+const themeNames={
  default:"Default - Emerald Green",
  summer:"Summer - Fresh Cyan",
  winter:"Winter - Icy Blue",
@@ -333,402 +445,306 @@ function updateThemeCards(){
 
 $("themeChoice").addEventListener("change",updateThemeCards);
 
+document.querySelectorAll("[data-theme-card]").forEach(card=>{
+ const choose=()=>{
+  $("themeChoice").value=card.dataset.themeCard;
+  updateThemeCards();
+ };
+
+ card.addEventListener("click",choose);
+ card.addEventListener("keydown",event=>{
+  if(event.key==="Enter" || event.key===" "){
+   event.preventDefault();
+   choose();
+  }
+ });
+});
+
 async function loadThemeSettings(){
  try{
   const snap=await getDoc(themeRef);
+  const theme=snap.exists()?snap.data().theme || "default":"default";
+  const safeTheme=themeNames[theme]?theme:"default";
 
-  const theme=snap.exists()
-   ? snap.data().theme || "default"
-   : "default";
-
-  $("themeChoice").value=themeNames[theme]?theme:"default";
-  $("currentThemeLabel").textContent=themeNames[theme] || themeNames.default;
+  $("themeChoice").value=safeTheme;
+  $("currentThemeLabel").textContent=themeNames[safeTheme];
 
   updateThemeCards();
-  $("themeStatus").textContent="Theme settings loaded.";
+  setMessage("themeStatus","Theme settings loaded.");
  }catch(error){
   $("currentThemeLabel").textContent="Could not load";
-  $("themeStatus").textContent=
-   "Theme could not be loaded. Check Firestore Rules: "+error.message;
+  setMessage(
+   "themeStatus",
+   "Theme load error: "+error.message+
+   " Check Firestore Rules.",
+   true
+  );
  }
 }
 
 async function saveTheme(theme){
- if(!auth.currentUser || auth.currentUser.uid!==ADMIN_UID){
-  $("themeStatus").textContent="Admin login required.";
+ if(!isAdmin()){
+  setMessage("themeStatus","Admin login required.",true);
   return;
  }
 
  if(!themeNames[theme]){
-  $("themeStatus").textContent="Please select a valid theme.";
+  setMessage("themeStatus","Please select a valid theme.",true);
   return;
  }
 
- try{
-  $("themeStatus").textContent="Applying theme...";
+ $("applyThemeBtn").disabled=true;
+ $("resetThemeBtn").disabled=true;
+ setMessage("themeStatus","Applying theme...");
 
+ try{
   await setDoc(themeRef,{
    theme:theme,
    updatedAt:serverTimestamp()
   },{merge:true});
 
   $("currentThemeLabel").textContent=themeNames[theme];
-  $("themeStatus").textContent=
-   "Success! "+themeNames[theme]+" saved for the website.";
-
+  $("themeChoice").value=theme;
   updateThemeCards();
+
+  setMessage(
+   "themeStatus",
+   "Success! "+themeNames[theme]+" saved for the website."
+  );
  }catch(error){
-  $("themeStatus").textContent=
-   "Could not save theme: "+error.message;
+  setMessage("themeStatus","Could not save theme: "+error.message,true);
+ }finally{
+  $("applyThemeBtn").disabled=false;
+  $("resetThemeBtn").disabled=false;
  }
 }
 
-$("applyThemeBtn").onclick=()=>{
+$("applyThemeBtn").addEventListener("click",()=>{
  saveTheme($("themeChoice").value);
-};
+});
 
-$("resetThemeBtn").onclick=()=>{
+$("resetThemeBtn").addEventListener("click",()=>{
  $("themeChoice").value="default";
  updateThemeCards();
  saveTheme("default");
-};
+});
 
 /* POPUP MANAGER */
+const popupRef=doc(db,"siteSettings","popup");
 
-const popupRef = doc(db,"siteSettings","popup");
+function getYouTubeEmbedUrl(value){
+ try{
+  const url=new URL(value.trim());
+  const host=url.hostname.toLowerCase().replace(/^www\./,"");
+  let videoId="";
 
-function validUrl(value) {
- try {
-  const url = new URL(value);
-  return url.protocol === "https:" || url.protocol === "http:";
- } catch {
-  return false;
- }
-}
-
-function getYouTubeEmbedUrl(value) {
- try {
-  const url = new URL(value.trim());
-  const host = url.hostname.toLowerCase().replace(/^www\./,"");
-  let videoId = "";
-
-  if(host === "youtu.be") {
-   videoId = url.pathname.split("/").filter(Boolean)[0] || "";
-  } else if(
-   host === "youtube.com" ||
-   host === "m.youtube.com" ||
-   host === "youtube-nocookie.com"
-  ) {
-   if(url.pathname === "/watch") {
-    videoId = url.searchParams.get("v") || "";
-   } else {
-    const parts = url.pathname.split("/").filter(Boolean);
-    if(["embed","shorts","live"].includes(parts[0])) {
-     videoId = parts[1] || "";
+  if(host==="youtu.be"){
+   videoId=url.pathname.split("/").filter(Boolean)[0] || "";
+  }else if(
+   host==="youtube.com" ||
+   host==="m.youtube.com" ||
+   host==="youtube-nocookie.com"
+  ){
+   if(url.pathname==="/watch"){
+    videoId=url.searchParams.get("v") || "";
+   }else{
+    const parts=url.pathname.split("/").filter(Boolean);
+    if(["embed","shorts","live"].includes(parts[0])){
+     videoId=parts[1] || "";
     }
    }
   }
 
   if(!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) return "";
 
-  return "https://www.youtube-nocookie.com/embed/" +
-   videoId + "?autoplay=1&mute=1&playsinline=1&rel=0";
- } catch {
+  return "https://www.youtube-nocookie.com/embed/"+
+   videoId+"?autoplay=1&mute=1&playsinline=1&rel=0";
+ }catch(error){
   return "";
  }
 }
 
-function showPopupPreview() {
- const type = $("popupType").value;
- const url = $("popupMedia").value.trim();
+function showPopupPreview(){
+ const type=$("popupType").value;
+ const url=$("popupMedia").value.trim();
 
- $("popupPreview").innerHTML = "";
- $("popupPreviewBox").style.display = "none";
+ $("popupPreview").replaceChildren();
+ $("popupPreviewBox").style.display="none";
 
  let media;
 
- if(type === "youtube") {
-  const embedUrl = getYouTubeEmbedUrl(url);
+ if(type==="youtube"){
+  const embedUrl=getYouTubeEmbedUrl(url);
 
-  if(!embedUrl) {
-   $("popupStatus").textContent =
-    "Please enter a valid YouTube video link.";
+  if(!embedUrl){
+   setMessage("popupStatus","Please enter a valid YouTube video link.",true);
    return;
   }
 
-  media = document.createElement("iframe");
-  media.src = embedUrl;
-  media.className = "preview-frame";
-  media.title = "YouTube video preview";
-  media.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-  media.allowFullscreen = true;
-  media.referrerPolicy = "strict-origin-when-cross-origin";
+  media=document.createElement("iframe");
+  media.src=embedUrl;
+  media.className="preview-frame";
+  media.title="YouTube video preview";
+  media.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+  media.allowFullscreen=true;
+  media.referrerPolicy="strict-origin-when-cross-origin";
 
- } else {
-  if(!validUrl(url)) {
-   $("popupStatus").textContent =
-    "Please enter a valid image or video URL.";
+ }else{
+  if(!validUrl(url)){
+   setMessage("popupStatus","Please enter a valid image or video URL.",true);
    return;
   }
 
-  if(type === "video") {
-   media = document.createElement("video");
-   media.src = url;
-   media.controls = true;
-   media.muted = true;
-   media.playsInline = true;
-   media.preload = "metadata";
-  } else {
-   media = document.createElement("img");
-   media.src = url;
-   media.alt = "Popup preview";
+  if(type==="video"){
+   media=document.createElement("video");
+   media.src=url;
+   media.controls=true;
+   media.muted=true;
+   media.playsInline=true;
+   media.preload="metadata";
+  }else{
+   media=document.createElement("img");
+   media.src=url;
+   media.alt="Popup preview";
   }
 
-  media.className = "preview";
+  media.className="preview";
 
-  media.onerror = () => {
-   $("popupStatus").textContent =
-    "Preview could not load. Please check the link.";
+  media.onerror=()=>{
+   setMessage("popupStatus","Preview could not load. Please check the link.",true);
   };
  }
 
  $("popupPreview").appendChild(media);
- $("popupPreviewBox").style.display = "block";
- $("popupStatus").textContent = "Preview ready.";
+ $("popupPreviewBox").style.display="block";
+ setMessage("popupStatus","Preview ready.");
 }
 
-$("previewPopupBtn").onclick = showPopupPreview;
+$("previewPopupBtn").addEventListener("click",showPopupPreview);
 
-async function loadPopupSettings() {
- try {
-  const snap = await getDoc(popupRef);
+async function loadPopupSettings(){
+ try{
+  const snap=await getDoc(popupRef);
 
-  if(snap.exists()) {
-   const data = snap.data();
-
-   $("popupType").value = data.mediaType || "image";
-   $("popupMedia").value = data.mediaUrl || "";
-   $("popupDestination").value = data.destinationUrl || "";
-   $("popupEnabled").checked = data.enabled === true;
-
-   if(data.mediaUrl) showPopupPreview();
-
-   $("popupStatus").textContent = "Popup settings loaded.";
-  } else {
-   $("popupStatus").textContent = "No popup settings saved yet.";
-  }
- } catch(error) {
-  $("popupStatus").textContent =
-   "Could not load popup: " + error.message;
- }
-}
-
-$("savePopupBtn").onclick = async () => {
- if(!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
-  $("popupStatus").textContent = "Admin login required.";
-  return;
- }
-
- const type = $("popupType").value;
- const enteredUrl = $("popupMedia").value.trim();
- const destinationUrl = $("popupDestination").value.trim();
-
- let mediaUrl = enteredUrl;
-
- if(type === "youtube") {
-  mediaUrl = getYouTubeEmbedUrl(enteredUrl);
-
-  if(!mediaUrl) {
-   $("popupStatus").textContent =
-    "Please enter a valid YouTube video link.";
+  if(!snap.exists()){
+   setMessage("popupStatus","No popup settings saved yet.");
    return;
   }
- } else if(!validUrl(mediaUrl)) {
-  $("popupStatus").textContent =
-   "Please enter a valid media URL.";
+
+  const data=snap.data();
+
+  $("popupType").value=
+   ["image","video","youtube"].includes(data.mediaType)
+    ?data.mediaType:"image";
+
+  $("popupMedia").value=data.mediaUrl || "";
+  $("popupDestination").value=data.destinationUrl || "";
+  $("popupEnabled").checked=data.enabled===true;
+
+  if(data.mediaUrl) showPopupPreview();
+
+  setMessage("popupStatus","Popup settings loaded.");
+ }catch(error){
+  setMessage("popupStatus","Could not load popup: "+error.message,true);
+ }
+}
+
+$("savePopupBtn").addEventListener("click",async()=>{
+ if(!isAdmin()){
+  setMessage("popupStatus","Admin login required.",true);
   return;
  }
 
- if(destinationUrl && !validUrl(destinationUrl)) {
-  $("popupStatus").textContent =
-   "Please enter a valid destination URL.";
+ const type=$("popupType").value;
+ const enteredUrl=$("popupMedia").value.trim();
+ const destinationUrl=$("popupDestination").value.trim();
+
+ let mediaUrl=enteredUrl;
+
+ if(type==="youtube"){
+  mediaUrl=getYouTubeEmbedUrl(enteredUrl);
+
+  if(!mediaUrl){
+   setMessage("popupStatus","Please enter a valid YouTube video link.",true);
+   return;
+  }
+ }else if(!validUrl(mediaUrl)){
+  setMessage("popupStatus","Please enter a valid media URL.",true);
   return;
  }
 
- try {
-  $("popupStatus").textContent = "Saving popup settings...";
+ if(destinationUrl && !validUrl(destinationUrl)){
+  setMessage("popupStatus","Please enter a valid destination URL.",true);
+  return;
+ }
 
+ $("savePopupBtn").disabled=true;
+ setMessage("popupStatus","Saving popup settings...");
+
+ try{
   await setDoc(popupRef,{
    mediaType:type,
-   mediaUrl,
-   destinationUrl,
+   mediaUrl:mediaUrl,
+   destinationUrl:destinationUrl,
    enabled:$("popupEnabled").checked,
    updatedAt:serverTimestamp()
   },{merge:true});
 
-  $("popupMedia").value = mediaUrl;
-  $("popupStatus").textContent =
-   "Popup settings saved successfully!";
- } catch(error) {
-  $("popupStatus").textContent = "Error: " + error.message;
+  $("popupMedia").value=mediaUrl;
+  setMessage("popupStatus","Popup settings saved successfully!");
+ }catch(error){
+  setMessage("popupStatus","Error saving popup: "+error.message,true);
+ }finally{
+  $("savePopupBtn").disabled=false;
  }
-};
+});
 
-$("disablePopupBtn").onclick = async () => {
- if(!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
-  $("popupStatus").textContent = "Admin login required.";
+$("disablePopupBtn").addEventListener("click",async()=>{
+ if(!isAdmin()){
+  setMessage("popupStatus","Admin login required.",true);
   return;
  }
 
- try {
+ $("disablePopupBtn").disabled=true;
+
+ try{
   await setDoc(popupRef,{
    enabled:false,
    updatedAt:serverTimestamp()
   },{merge:true});
 
-  $("popupEnabled").checked = false;
-  $("popupStatus").textContent = "Popup turned OFF.";
- } catch(error) {
-  $("popupStatus").textContent = "Error: " + error.message;
+  $("popupEnabled").checked=false;
+  setMessage("popupStatus","Popup turned OFF.");
+ }catch(error){
+  setMessage("popupStatus","Error: "+error.message,true);
+ }finally{
+  $("disablePopupBtn").disabled=false;
  }
-};
+});
 
 /* MOVIE MANAGEMENT */
-
-function makeId(text) {
- return text.toLowerCase().trim()
+function makeId(value){
+ return value.toLowerCase().trim()
   .replace(/[^a-z0-9]+/g,"-")
-  .replace(/^-|-$/g,"");
+  .replace(/^-+|-+$/g,"");
 }
 
-function clearForm() {
- editingId = null;
- $("formTitle").textContent = "Add New Movie";
- $("saveBtn").textContent = "Save Movie";
+function clearForm(){
+ editingId=null;
+ $("formTitle").textContent="Add New Movie";
+ $("saveBtn").textContent="Save Movie";
 
  [
   "movieTitle","movieId","year","genre","rating",
   "director","cast","story","poster","screenshots",
   "trailer","watchLink","downloadLink"
- ].forEach(id => $(id).value = "");
+ ].forEach(id=>{
+  $(id).value="";
+ });
+
+ $("status").textContent="";
 }
 
-$("clearBtn").onclick = clearForm;
+$("clearBtn").addEventListener("click",clearForm);
 
-$("saveBtn").onclick = async () => {
- if(!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
-  $("status").textContent = "Admin login required.";
-  return;
- }
-
- const title = $("movieTitle").value.trim();
- const id = editingId || makeId($("movieId").value || title);
-
- if(!title || !id) {
-  $("status").textContent = "Movie Name is required.";
-  return;
- }
-
- const movieRef = doc(db,"movies",id);
-
- const data = {
-  title,
-  year:$("year").value.trim(),
-  genre:$("genre").value.trim(),
-  rating:$("rating").value.trim(),
-  director:$("director").value.trim(),
-  cast:$("cast").value.split(",").map(x=>x.trim()).filter(Boolean),
-  story:$("story").value.trim(),
-  poster:$("poster").value.trim(),
-  screenshots:$("screenshots").value.split(",").map(x=>x.trim()).filter(Boolean),
-  trailer:$("trailer").value.trim(),
-  watch:$("watchLink").value.trim(),
-  downloadLink:$("downloadLink").value.trim()
- };
-
- try {
-  $("status").textContent = "Saving movie...";
-  const oldMovie = await getDoc(movieRef);
-
-  if(oldMovie.exists() && oldMovie.data().createdAt) {
-   data.createdAt = oldMovie.data().createdAt;
-  } else {
-   data.createdAt = serverTimestamp();
-  }
-
-  await setDoc(movieRef,data);
-  $("status").textContent = "Movie saved successfully!";
-  clearForm();
-  await loadMovies();
- } catch(error) {
-  $("status").textContent = "Error: " + error.message;
- }
-};
-
-async function loadMovies() {
- try {
-  const result = await getDocs(collection(db,"movies"));
-  const list = $("movieList");
-  list.innerHTML = "";
-
-  if(result.empty) {
-   list.textContent = "No movies added yet.";
-   return;
-  }
-
-  const movies = result.docs.sort((a,b) => {
-   const timeA = a.data().createdAt?.toMillis?.() || 0;
-   const timeB = b.data().createdAt?.toMillis?.() || 0;
-   return timeB - timeA;
-  });
-
-  movies.forEach(item => {
-   const data = item.data();
-   const box = document.createElement("div");
-   box.className = "movie";
-
-   const heading = document.createElement("h3");
-   heading.textContent = data.title || item.id;
-
-   const details = document.createElement("p");
-   details.className = "note";
-   details.textContent =
-    (data.year || "") + " • " + (data.genre || "");
-
-   const edit = document.createElement("button");
-   edit.textContent = "Edit";
-   edit.onclick = () => editMovie(item.id,data);
-
-   const remove = document.createElement("button");
-   remove.textContent = "Delete";
-   remove.className = "danger";
-   remove.onclick = () => removeMovie(item.id);
-
-   box.append(heading,details,edit,remove);
-   list.appendChild(box);
-  });
-
- } catch(error) {
-  $("movieList").textContent = "Error: " + error.message;
- }
-}
-
-function editMovie(id,data) {
- editingId = id;
- $("formTitle").textContent = "Edit Movie";
- $("saveBtn").textContent = "Update Movie";
-
- $("movieTitle").value = data.title || "";
- $("movieId").value = id;
- $("year").value = data.year || "";
- $("genre").value = data.genre || "";
- $("rating").value = data.rating || "";
- $("director").value = data.director || "";
- $("cast").value = Array.isArray(data.cast) ?
-  data.cast.join(", ") : (data.cast || "");
- $("story").value = data.story || "";
- $("poster").value = data.poster || data.posterUrl || "";
- $("screenshots").value = Array.isArray(data.screenshots) ?
-  data.screenshots.join(", ") : "";
- $("trailer").value = data.trailer || data.trailerUrl || "";
- $
+$("saveBtn").a
