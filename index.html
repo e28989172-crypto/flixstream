@@ -632,7 +632,9 @@ popup.classList.add("show");
 console.error("Popup loading error:",error);
 }
 }
-loadPopup();
+setTimeout(()=>{
+  loadPopup();
+},3000);
 
 /* SHOW APP ERRORS IN CONSOLE */
 window.addEventListener("unhandledrejection",event=>{
