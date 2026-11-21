@@ -558,8 +558,7 @@ if(data.enabled!==true)return;
 const mediaUrl=safeUrl(data.mediaUrl);
 const destination=safeUrl(data.destinationUrl);
 const type=data.type || data.mediaType;
-if(!mediaUrl||!["image","video","youtube"].includes(type))return;
-
+if(!mediaUrl||!["image","video","youtube","x"].includes(type))return;
 holder.replaceChildren();
 visitLink.classList.remove("show");
 visitLink.removeAttribute("href");
