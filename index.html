@@ -507,10 +507,12 @@ allMovies.sort((a,b)=>a.title.localeCompare(b.title));
 renderMovies();
 loadStatus.textContent=allMovies.length?
 "Movies loaded successfully.":"No movies have been added yet.";
+
 }catch(error){
 console.error("Movie loading error:",error);
 loadStatus.textContent="Could not load movies: "+error.message;
 movieCount.textContent="0 MOVIES";
+}
 }
 loadMovies();
 
