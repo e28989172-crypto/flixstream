@@ -649,6 +649,10 @@ function startPopupCountdown(){
 }
 
 holder.onclick = startPopupCountdown;
+  visitLink.onclick = function(event){
+  event.preventDefault();
+  startPopupCountdown();
+};
 popup.classList.add("show");
 }catch(error){
 console.error("Popup loading error:",error);
