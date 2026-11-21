@@ -584,7 +584,7 @@ async function loadPopupSettings(){
   if(!snap.exists())return;
 
   const data=snap.data();
-  $("popupType").value=["image","video","youtube"].includes(data.type)?data.type:"image";
+  $("popupType").value=["image","video","youtube","x"].includes(data.type)?data.type:"image";
   $("popupMedia").value=data.mediaUrl||"";
   $("popupDestination").value=data.destinationUrl||"";
   $("popupEnabled").checked=data.enabled===true;
