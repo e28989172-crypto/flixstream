@@ -531,6 +531,7 @@ const hint=document.getElementById("popupHint");
 const soundButton=document.getElementById("popupSound");
 
 function closePopup(){
+  clearInterval(popupTimer);
 popup.classList.remove("show");
 const video=holder.querySelector("video");
 if(video)video.pause();
