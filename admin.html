@@ -44,6 +44,39 @@ margin-top:10px;background:#080d12
 .field-label{display:block;color:#20c99a;margin-top:12px;font-size:14px}
 .checkrow{display:flex;align-items:center;gap:10px;margin:12px 0}
 .checkrow input{width:auto;margin:0;accent-color:#20c99a}
+
+/* THEME MANAGER */
+.theme-options{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:10px;
+margin:15px 0;
+}
+.theme-option{
+border:1px solid #34434b;
+border-radius:10px;
+padding:12px;
+background:#080d12;
+}
+.theme-option strong{display:block;margin-bottom:8px}
+.theme-colors{display:flex;gap:5px}
+.theme-colors span{
+height:24px;flex:1;border-radius:5px;
+}
+.theme-option.selected{border:2px solid #20c99a}
+.theme-current{
+padding:12px;
+background:#080d12;
+border-radius:8px;
+border:1px solid #34434b;
+color:#20c99a;
+margin:12px 0;
+}
+@media(max-width:480px){
+.container{padding:10px}
+.card{padding:15px}
+.theme-options{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 
@@ -62,9 +95,90 @@ margin-top:10px;background:#080d12
 
 <div id="dashboard">
 
-<h1>Movie Management 🎬</h1>
-<p class="note">Add, edit and delete your movie information.</p>
+<h1>Website Management ⚙️</h1>
+<p class="note">Manage your website themes, popup and movies.</p>
 <p id="status"></p>
+
+<!-- WEBSITE THEME MANAGER -->
+<div class="card">
+<h1>Website Theme Manager 🎨</h1>
+<p class="note">Choose a theme and apply it to the entire FLIXSTREAM website.</p>
+
+<div class="theme-current">
+Currently selected theme:
+<strong id="currentThemeLabel">Loading...</strong>
+</div>
+
+<label class="field-label">Choose Website Theme</label>
+<select id="themeChoice">
+<option value="default">Default - Emerald Green</option>
+<option value="summer">☀️ Summer - Fresh Cyan</option>
+<option value="winter">❄️ Winter - Icy Blue</option>
+<option value="diwali">🪔 Diwali - Golden Lights</option>
+<option value="christmas">🎄 Christmas - Red & Green</option>
+<option value="holi">🎨 Holi - Colorful</option>
+</select>
+
+<div class="theme-options">
+<div class="theme-option" data-theme-card="default">
+<strong>Default 💚</strong>
+<div class="theme-colors">
+<span style="background:#080b12"></span>
+<span style="background:#111522"></span>
+<span style="background:#20c99a"></span>
+</div>
+</div>
+
+<div class="theme-option" data-theme-card="summer">
+<strong>Summer ☀️</strong>
+<div class="theme-colors">
+<span style="background:#07151b"></span>
+<span style="background:#0d2630"></span>
+<span style="background:#22d3ee"></span>
+</div>
+</div>
+
+<div class="theme-option" data-theme-card="winter">
+<strong>Winter ❄️</strong>
+<div class="theme-colors">
+<span style="background:#081321"></span>
+<span style="background:#101f32"></span>
+<span style="background:#60baf5"></span>
+</div>
+</div>
+
+<div class="theme-option" data-theme-card="diwali">
+<strong>Diwali 🪔</strong>
+<div class="theme-colors">
+<span style="background:#160d08"></span>
+<span style="background:#24140c"></span>
+<span style="background:#f5b942"></span>
+</div>
+</div>
+
+<div class="theme-option" data-theme-card="christmas">
+<strong>Christmas 🎄</strong>
+<div class="theme-colors">
+<span style="background:#08130e"></span>
+<span style="background:#102019"></span>
+<span style="background:#e34b55"></span>
+</div>
+</div>
+
+<div class="theme-option" data-theme-card="holi">
+<strong>Holi 🎨</strong>
+<div class="theme-colors">
+<span style="background:#130b1c"></span>
+<span style="background:#21122e"></span>
+<span style="background:#d65cff"></span>
+</div>
+</div>
+</div>
+
+<button id="applyThemeBtn">Apply Theme 🌟</button>
+<button id="resetThemeBtn" class="secondary">Reset to Default</button>
+<p id="themeStatus" class="note"></p>
+</div>
 
 <!-- POPUP MANAGER -->
 <div class="card">
@@ -183,6 +297,7 @@ onAuthStateChanged(auth,async user => {
   $("loginBox").style.display = "none";
   $("dashboard").style.display = "block";
   $("message").textContent = "";
+  await loadThemeSettings();
   await loadMovies();
   await loadPopupSettings();
  } else {
@@ -191,6 +306,92 @@ onAuthStateChanged(auth,async user => {
   if(user) await signOut(auth);
  }
 });
+
+/* WEBSITE THEME MANAGER */
+
+const themeRef = doc(db,"siteSettings","theme");
+
+const themeNames = {
+ default:"Default - Emerald Green",
+ summer:"Summer - Fresh Cyan",
+ winter:"Winter - Icy Blue",
+ diwali:"Diwali - Golden Lights",
+ christmas:"Christmas - Red & Green",
+ holi:"Holi - Colorful"
+};
+
+function updateThemeCards(){
+ const selected=$("themeChoice").value;
+
+ document.querySelectorAll("[data-theme-card]").forEach(card=>{
+  card.classList.toggle(
+   "selected",
+   card.dataset.themeCard===selected
+  );
+ });
+}
+
+$("themeChoice").addEventListener("change",updateThemeCards);
+
+async function loadThemeSettings(){
+ try{
+  const snap=await getDoc(themeRef);
+
+  const theme=snap.exists()
+   ? snap.data().theme || "default"
+   : "default";
+
+  $("themeChoice").value=themeNames[theme]?theme:"default";
+  $("currentThemeLabel").textContent=themeNames[theme] || themeNames.default;
+
+  updateThemeCards();
+  $("themeStatus").textContent="Theme settings loaded.";
+ }catch(error){
+  $("currentThemeLabel").textContent="Could not load";
+  $("themeStatus").textContent=
+   "Theme could not be loaded. Check Firestore Rules: "+error.message;
+ }
+}
+
+async function saveTheme(theme){
+ if(!auth.currentUser || auth.currentUser.uid!==ADMIN_UID){
+  $("themeStatus").textContent="Admin login required.";
+  return;
+ }
+
+ if(!themeNames[theme]){
+  $("themeStatus").textContent="Please select a valid theme.";
+  return;
+ }
+
+ try{
+  $("themeStatus").textContent="Applying theme...";
+
+  await setDoc(themeRef,{
+   theme:theme,
+   updatedAt:serverTimestamp()
+  },{merge:true});
+
+  $("currentThemeLabel").textContent=themeNames[theme];
+  $("themeStatus").textContent=
+   "Success! "+themeNames[theme]+" saved for the website.";
+
+  updateThemeCards();
+ }catch(error){
+  $("themeStatus").textContent=
+   "Could not save theme: "+error.message;
+ }
+}
+
+$("applyThemeBtn").onclick=()=>{
+ saveTheme($("themeChoice").value);
+};
+
+$("resetThemeBtn").onclick=()=>{
+ $("themeChoice").value="default";
+ updateThemeCards();
+ saveTheme("default");
+};
 
 /* POPUP MANAGER */
 
@@ -205,12 +406,10 @@ function validUrl(value) {
  }
 }
 
-/* Convert normal YouTube links into safe embed links */
 function getYouTubeEmbedUrl(value) {
  try {
   const url = new URL(value.trim());
   const host = url.hostname.toLowerCase().replace(/^www\./,"");
-
   let videoId = "";
 
   if(host === "youtu.be") {
@@ -532,32 +731,4 @@ function editMovie(id,data) {
  $("screenshots").value = Array.isArray(data.screenshots) ?
   data.screenshots.join(", ") : "";
  $("trailer").value = data.trailer || data.trailerUrl || "";
- $("watchLink").value =
-  data.watch || data.watchLink || data.watchUrl || "";
- $("downloadLink").value = data.downloadLink || "";
-
- window.scrollTo({top:0,behavior:"smooth"});
-}
-
-async function removeMovie(id) {
- if(!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) return;
-
- if(!confirm("Are you sure you want to delete this movie?")) return;
-
- try {
-  await deleteDoc(doc(db,"movies",id));
-  $("status").textContent = "Movie deleted.";
-
-  if(editingId === id) clearForm();
-
-  await loadMovies();
- } catch(error) {
-  $("status").textContent = "Error: " + error.message;
- }
-}
-
-$("logoutBtn").onclick = () => signOut(auth);
-
-</script>
-</body>
-</html>
+ $
