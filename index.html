@@ -539,7 +539,8 @@ const holder=document.getElementById("popupMediaHolder");
 const visitLink=document.getElementById("popupVisitLink");
 const hint=document.getElementById("popupHint");
 const soundButton=document.getElementById("popupSound");
-
+let popupTimer;
+let popupCountdown = 10;
 function closePopup(){
   clearInterval(popupTimer);
 popup.classList.remove("show");
@@ -569,7 +570,36 @@ encodeURIComponent("Check out this featured content on FLIXSTREAM!")+
 "&url="+encodeURIComponent(destination || window.location.href);
 soundButton.onclick=null;
 
-if(type==="youtube"){
+if(type==="x"){
+const post=document.createElement("blockquote");
+post.className="twitter-tweet";
+
+const link=document.createElement("a");
+link.href=mediaUrl;
+link.textContent="View this post on X";
+
+post.append(link);
+holder.append(post);
+
+let xScript=document.querySelector(
+'script[src="https://platform.twitter.com/widgets.js"]'
+);
+
+if(!xScript){
+xScript=document.createElement("script");
+xScript.src="https://platform.twitter.com/widgets.js";
+xScript.async=true;
+xScript.onload=()=>{
+if(window.twttr)window.twttr.widgets.load(holder);
+};
+document.head.append(xScript);
+}else if(window.twttr){
+window.twttr.widgets.load(holder);
+}
+
+hint.textContent="X video post";
+
+}else if(type==="youtube"){
 let youtubeId="";
 try{
 const u=new URL(mediaUrl);
