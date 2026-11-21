@@ -496,7 +496,7 @@ if(data.enabled!==true)return;
 
 const mediaUrl=safeUrl(data.mediaUrl);
 const destination=safeUrl(data.destinationUrl);
-const type=data.mediaType;
+const type=data.type || data.mediaType;
 if(!mediaUrl||!["image","video","youtube"].includes(type))return;
 
 holder.replaceChildren();
