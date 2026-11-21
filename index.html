@@ -10,522 +10,208 @@
 
 <style>
 :root{
---bg:#080b12;
---surface:#111522;
---card:#151a27;
---card-border:#252d3b;
---accent:#20c99a;
---accent-bright:#20d6a0;
---accent-text:#07130f;
---text:#ffffff;
---muted:#aab4c4;
---hero-glow:#174c48;
---hero-bg:#172238;
---filter:#1a2130;
---popup-bg:#111b24;
---popup-border:#20c99a;
---transition:background .4s,color .4s,border-color .4s;
+--bg:#080b12;--surface:#111522;--card:#151a27;
+--card-border:#252d3b;--accent:#20c99a;
+--accent-bright:#20d6a0;--accent-text:#07130f;
+--text:#fff;--muted:#aab4c4;--hero-glow:#174c48;
+--hero-bg:#172238;--filter:#1a2130;
+--popup-bg:#111b24;--popup-border:#20c99a;
 }
-
 html[data-theme="summer"]{
---bg:#07151b;
---surface:#0d2630;
---card:#12313b;
---card-border:#20515b;
---accent:#22d3ee;
---accent-bright:#67e8f9;
---accent-text:#04232b;
---muted:#b8dce2;
---hero-glow:#087e83;
---hero-bg:#064e5a;
---filter:#16404b;
---popup-bg:#0d2630;
+--bg:#07151b;--surface:#0d2630;--card:#12313b;
+--card-border:#20515b;--accent:#22d3ee;--accent-bright:#67e8f9;
+--accent-text:#04232b;--muted:#b8dce2;--hero-glow:#087e83;
+--hero-bg:#064e5a;--filter:#16404b;--popup-bg:#0d2630;
 --popup-border:#22d3ee;
 }
-
 html[data-theme="winter"]{
---bg:#081321;
---surface:#101f32;
---card:#14283d;
---card-border:#29425c;
---accent:#60baf5;
---accent-bright:#a5dcff;
---accent-text:#061827;
---muted:#b9cce0;
---hero-glow:#245d91;
---hero-bg:#142c4b;
---filter:#1b3049;
---popup-bg:#101f32;
+--bg:#081321;--surface:#101f32;--card:#14283d;
+--card-border:#29425c;--accent:#60baf5;--accent-bright:#a5dcff;
+--accent-text:#061827;--muted:#b9cce0;--hero-glow:#245d91;
+--hero-bg:#142c4b;--filter:#1b3049;--popup-bg:#101f32;
 --popup-border:#60baf5;
 }
-
 html[data-theme="diwali"]{
---bg:#160d08;
---surface:#24140c;
---card:#2c1b10;
---card-border:#63401e;
---accent:#f5b942;
---accent-bright:#ffd878;
---accent-text:#281400;
---muted:#dfc6a6;
---hero-glow:#98500d;
---hero-bg:#46200c;
---filter:#3a2515;
---popup-bg:#24140c;
+--bg:#160d08;--surface:#24140c;--card:#2c1b10;
+--card-border:#63401e;--accent:#f5b942;--accent-bright:#ffd878;
+--accent-text:#281400;--muted:#dfc6a6;--hero-glow:#98500d;
+--hero-bg:#46200c;--filter:#3a2515;--popup-bg:#24140c;
 --popup-border:#f5b942;
 }
-
 html[data-theme="christmas"]{
---bg:#08130e;
---surface:#102019;
---card:#14291e;
---card-border:#31543b;
---accent:#e34b55;
---accent-bright:#ff737b;
---accent-text:#ffffff;
---muted:#b9d0c0;
---hero-glow:#174d30;
---hero-bg:#173a27;
---filter:#1b3325;
---popup-bg:#102019;
+--bg:#08130e;--surface:#102019;--card:#14291e;
+--card-border:#31543b;--accent:#e34b55;--accent-bright:#ff737b;
+--accent-text:#fff;--muted:#b9d0c0;--hero-glow:#174d30;
+--hero-bg:#173a27;--filter:#1b3325;--popup-bg:#102019;
 --popup-border:#e34b55;
 }
-
 html[data-theme="holi"]{
---bg:#130b1c;
---surface:#21122e;
---card:#2b193b;
---card-border:#58346c;
---accent:#d65cff;
---accent-bright:#f09bff;
---accent-text:#21092d;
---muted:#d2b8df;
---hero-glow:#702c91;
---hero-bg:#382052;
---filter:#39204b;
---popup-bg:#21122e;
+--bg:#130b1c;--surface:#21122e;--card:#2b193b;
+--card-border:#58346c;--accent:#d65cff;--accent-bright:#f09bff;
+--accent-text:#21092d;--muted:#d2b8df;--hero-glow:#702c91;
+--hero-bg:#382052;--filter:#39204b;--popup-bg:#21122e;
 --popup-border:#d65cff;
 }
-
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-
 body{
-margin:0;
-background:var(--bg);
-color:var(--text);
-font-family:Arial,sans-serif;
-overflow-x:hidden;
-transition:var(--transition);
+margin:0;background:var(--bg);color:var(--text);
+font-family:Arial,sans-serif;overflow-x:hidden;
+transition:background .4s,color .4s;
 }
-
-/* ANIMATED THEME BACKGROUND */
 body::before{
-content:"";
-position:fixed;
-inset:0;
-z-index:-1;
-pointer-events:none;
-opacity:.17;
+content:"";position:fixed;inset:0;z-index:-1;
+pointer-events:none;opacity:.17;
 background:
 radial-gradient(circle at 15% 20%,var(--accent),transparent 32%),
 radial-gradient(circle at 85% 75%,var(--hero-glow),transparent 35%);
 animation:themeGlow 12s ease-in-out infinite alternate;
 }
-
 @keyframes themeGlow{
 0%{transform:scale(1);opacity:.10}
 100%{transform:scale(1.18);opacity:.24}
 }
-
-html[data-theme="winter"] body::before{
-background:
-radial-gradient(circle at 15% 20%,#8bdcff,transparent 30%),
-radial-gradient(circle at 85% 75%,#2869a0,transparent 35%);
-}
-
-html[data-theme="diwali"] body::before{
-background:
-radial-gradient(circle at 15% 20%,#ffb52e,transparent 30%),
-radial-gradient(circle at 85% 75%,#b94d0b,transparent 35%);
-}
-
-html[data-theme="holi"] body::before{
-background:
-radial-gradient(circle at 15% 20%,#f04bdb,transparent 30%),
-radial-gradient(circle at 85% 75%,#27b9ed,transparent 35%);
-}
-
-/* HEADER */
 header{
-min-height:70px;
-padding:12px 5%;
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:12px;
-background:var(--surface);
-position:sticky;
-top:0;
-z-index:10;
+min-height:70px;padding:12px 5%;display:flex;
+align-items:center;justify-content:space-between;gap:12px;
+background:var(--surface);position:sticky;top:0;z-index:10;
 border-bottom:1px solid var(--card-border);
-transition:var(--transition);
 }
-
-.logo{
-font-size:23px;
-font-weight:900;
-color:var(--accent-bright);
-white-space:nowrap;
-}
+.logo{font-size:23px;font-weight:900;color:var(--accent-bright)}
 .logo span{color:var(--text)}
-
-nav{
-display:flex;
-gap:16px;
-align-items:center;
-}
-nav a{
-color:var(--muted);
-text-decoration:none;
-font-size:13px;
-}
+nav{display:flex;gap:16px;align-items:center}
+nav a{color:var(--muted);text-decoration:none;font-size:13px}
 nav a:hover{color:var(--accent-bright)}
-
-#themeSelect{
-max-width:145px;
-padding:9px 10px;
-border-radius:8px;
-border:1px solid var(--card-border);
-background:var(--card);
-color:var(--text);
-font-size:12px;
-outline:none;
-cursor:pointer;
-}
-#themeSelect:focus{border-color:var(--accent)}
-
-/* HERO */
 .hero{
 padding:65px 6%;
 background:
 radial-gradient(ellipse at 90% 30%,var(--hero-glow),transparent 50%),
 linear-gradient(120deg,var(--hero-bg),var(--bg));
-transition:var(--transition);
 }
-.tag{
-color:var(--accent-bright);
-letter-spacing:3px;
-font-size:11px;
-font-weight:bold;
-}
-.hero h1{
-font-size:clamp(38px,8vw,65px);
-line-height:1.08;
-margin:20px 0;
-}
-.hero p{
-color:var(--muted);
-line-height:1.7;
-max-width:490px;
-}
+.tag{color:var(--accent-bright);letter-spacing:3px;font-size:11px;font-weight:bold}
+.hero h1{font-size:clamp(38px,8vw,65px);line-height:1.08;margin:20px 0}
+.hero p{color:var(--muted);line-height:1.7;max-width:490px}
 .hero a{
-display:inline-block;
-background:var(--accent);
-color:var(--accent-text);
-text-decoration:none;
-padding:14px 22px;
-border-radius:8px;
-font-weight:bold;
-margin-top:15px;
-transition:transform .25s,background .3s;
+display:inline-block;background:var(--accent);color:var(--accent-text);
+text-decoration:none;padding:14px 22px;border-radius:8px;
+font-weight:bold;margin-top:15px;
 }
-.hero a:hover{
-background:var(--accent-bright);
-transform:translateY(-2px);
-}
-
-/* SEARCH */
 .search{padding:25px 5% 15px}
 .search form{display:flex;gap:9px}
 .search input{
-flex:1;
-min-width:0;
-padding:16px;
-border-radius:10px;
-border:1px solid var(--card-border);
-background:var(--surface);
-color:var(--text);
-font-size:16px;
-outline:none;
+flex:1;min-width:0;padding:16px;border-radius:10px;
+border:1px solid var(--card-border);background:var(--surface);
+color:var(--text);font-size:16px;outline:none;
 }
 .search input:focus{border-color:var(--accent)}
 .search button{
-width:54px;
-border:0;
-border-radius:10px;
-background:var(--accent);
-color:var(--accent-text);
-font-size:21px;
-font-weight:bold;
-cursor:pointer;
+width:54px;border:0;border-radius:10px;
+background:var(--accent);color:var(--accent-text);
+font-size:21px;font-weight:bold;cursor:pointer;
 }
-.search button:active{transform:scale(.96)}
-
-/* FILTERS */
 .filters{
-display:flex;
-gap:10px;
-padding:8px 5% 25px;
-overflow-x:auto;
-scrollbar-width:none;
+display:flex;gap:10px;padding:8px 5% 25px;
+overflow-x:auto;scrollbar-width:none;
 }
 .filters::-webkit-scrollbar{display:none}
 .filters button{
-border:0;
-border-radius:30px;
-padding:11px 19px;
-background:var(--filter);
-color:var(--text);
-white-space:nowrap;
-cursor:pointer;
+border:0;border-radius:30px;padding:11px 19px;
+background:var(--filter);color:var(--text);
+white-space:nowrap;cursor:pointer;
 }
-.filters button.active{
-background:var(--accent);
-color:var(--accent-text);
-}
-
-/* MOVIES */
+.filters button.active{background:var(--accent);color:var(--accent-text)}
 .section{padding:10px 5% 35px}
 .heading{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:18px;
+display:flex;justify-content:space-between;
+align-items:center;margin-bottom:18px;
 }
 .heading h2{font-size:22px;margin:0}
 .heading span{color:var(--accent-bright);font-size:12px}
-
-.movies{
-display:grid;
-grid-template-columns:repeat(2,minmax(0,1fr));
-gap:15px;
-}
+.movies{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
 .movie{
-min-width:0;
-background:var(--card);
+min-width:0;background:var(--card);
 border:1px solid var(--card-border);
-border-radius:12px;
-overflow:hidden;
-transition:transform .25s,border-color .25s,background .4s;
+border-radius:12px;overflow:hidden;
+transition:transform .25s,border-color .25s;
 }
-.movie:hover{
-transform:translateY(-4px);
-border-color:var(--accent);
-}
+.movie:hover{transform:translateY(-4px);border-color:var(--accent)}
+.movie-link{display:block;color:inherit;text-decoration:none}
+.movie-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .poster{
-position:relative;
-height:220px;
-background:var(--filter);
-display:flex;
-align-items:center;
-justify-content:center;
-overflow:hidden;
+position:relative;height:220px;background:var(--filter);
+display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
-.poster img{
-width:100%;
-height:100%;
-object-fit:cover;
-display:block;
-}
+.poster img{width:100%;height:100%;object-fit:cover;display:block}
+.poster-placeholder{color:var(--muted);font-size:13px;text-align:center;padding:15px}
 .poster-label{
-position:absolute;
-top:9px;
-left:9px;
-background:var(--accent);
-color:var(--accent-text);
-padding:5px 8px;
-border-radius:5px;
-font-size:10px;
-font-weight:bold;
+position:absolute;top:9px;left:9px;background:var(--accent);
+color:var(--accent-text);padding:5px 8px;border-radius:5px;
+font-size:10px;font-weight:bold;
 }
 .info{padding:12px}
 .info h3{font-size:15px;margin:0 0 7px}
 .info p{font-size:12px;color:var(--muted);margin:0 0 12px}
-
-.movie-actions{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:7px;
-}
+.movie-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .watch{
-display:block;
-text-align:center;
-text-decoration:none;
-background:var(--filter);
-color:var(--text);
-padding:11px 5px;
-border-radius:7px;
-font-size:11px;
-font-weight:bold;
+display:block;text-align:center;text-decoration:none;
+background:var(--filter);color:var(--text);
+padding:11px 5px;border-radius:7px;font-size:11px;font-weight:bold;
 }
-.watch:hover{
-background:var(--accent);
-color:var(--accent-text);
-}
-.stream{
-background:var(--accent);
-color:var(--accent-text);
-}
-
-.movie-link{
-display:block;
-color:inherit;
-text-decoration:none;
-}
-.movie-link:focus-visible{
-outline:2px solid var(--accent);
-outline-offset:3px;
-}
-
-.empty{
-display:none;
-color:var(--muted);
-padding:20px 0;
-}
-
+.watch:hover,.watch.stream{background:var(--accent);color:var(--accent-text)}
+.empty{display:none;color:var(--muted);padding:20px 0}
+.status{color:var(--muted);font-size:12px;margin:12px 0}
 footer{
-background:var(--surface);
-text-align:center;
-padding:30px 15px;
-color:var(--muted);
-font-size:12px;
-line-height:1.8;
+background:var(--surface);text-align:center;padding:30px 15px;
+color:var(--muted);font-size:12px;line-height:1.8;
 border-top:1px solid var(--card-border);
-transition:var(--transition);
 }
-
 @media(min-width:700px){
 .movies{grid-template-columns:repeat(4,minmax(0,1fr))}
 .poster{height:290px}
 }
-
-/* WEBSITE POPUP */
 #sitePopup{
-display:none;
-position:fixed;
-right:18px;
-bottom:20px;
+display:none;position:fixed;right:18px;bottom:20px;
 width:min(340px,calc(100vw - 30px));
-background:var(--popup-bg);
-border:1px solid var(--popup-border);
-border-radius:13px;
-padding:10px;
-z-index:9999;
+background:var(--popup-bg);border:1px solid var(--popup-border);
+border-radius:13px;padding:10px;z-index:9999;
 box-shadow:0 12px 40px rgba(0,0,0,.65);
 }
 #sitePopup.show{display:block}
-
-.popup-top{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:8px;
-}
-.popup-title{
-color:var(--accent-bright);
-font-weight:bold;
-font-size:13px;
-}
+.popup-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.popup-title{color:var(--accent-bright);font-weight:bold;font-size:13px}
 #popupClose{
-background:var(--filter);
-color:var(--text);
-border:0;
-border-radius:50%;
-width:30px;
-height:30px;
-font-size:19px;
-cursor:pointer;
+background:var(--filter);color:var(--text);border:0;
+border-radius:50%;width:30px;height:30px;font-size:19px;cursor:pointer;
 }
-#popupMediaLink{display:block;text-decoration:none}
-#popupMedia{
-width:100%;
-max-height:230px;
-object-fit:contain;
-display:block;
-border-radius:8px;
-background:#05090d;
-}
-#popupMedia.youtube-frame{
-width:100%;
-height:auto;
-aspect-ratio:16/9;
-max-height:230px;
-border:0;
-object-fit:initial;
-}
-.popup-controls{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:8px;
-margin-top:8px;
-}
+#popupMedia{width:100%;max-height:230px;object-fit:contain;display:block;border-radius:8px;background:#05090d}
+#popupMedia.youtube-frame{width:100%;aspect-ratio:16/9;border:0}
+.popup-controls{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px}
 .popup-controls button{
-border:0;
-border-radius:6px;
-padding:8px 12px;
-background:var(--accent);
-color:var(--accent-text);
-font-weight:bold;
-cursor:pointer;
+border:0;border-radius:6px;padding:8px 12px;
+background:var(--accent);color:var(--accent-text);font-weight:bold;cursor:pointer;
 }
 .popup-hint{color:var(--muted);font-size:10px}
-#popupVisitLink{
-display:none;
-margin-top:8px;
-color:var(--accent-bright);
-font-size:12px;
-font-weight:bold;
-text-decoration:none;
-}
+#popupVisitLink{display:none;margin-top:8px;color:var(--accent-bright);font-size:12px;font-weight:bold;text-decoration:none}
 #popupVisitLink.show{display:inline-block}
-
 @media(max-width:480px){
-header{padding:10px 4%;gap:8px}
+header{padding:10px 4%}
 .logo{font-size:19px}
-nav{gap:10px}
+nav{gap:12px}
 nav a{font-size:12px}
-#themeSelect{max-width:112px;font-size:11px;padding:8px 5px}
 #sitePopup{right:10px;bottom:12px}
 }
-
 @media(prefers-reduced-motion:reduce){
-*,*::before,*::after{
-animation-duration:.01ms!important;
-animation-iteration-count:1!important;
-scroll-behavior:auto!important;
-transition-duration:.01ms!important;
-}
+*,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}
 }
 </style>
 </head>
 
 <body>
-
 <header>
 <div class="logo">FLIX<span>STREAM</span></div>
 <nav>
 <a href="#">Home</a>
 <a href="#movies">Movies</a>
-<select id="themeSelect" aria-label="Choose website theme">
-<option value="default">Default Theme</option>
-<option value="summer">☀️ Summer</option>
-<option value="winter">❄️ Winter</option>
-<option value="diwali">🪔 Diwali</option>
-<option value="christmas">🎄 Christmas</option>
-<option value="holi">🎨 Holi</option>
-</select>
 </nav>
 </header>
 
@@ -543,97 +229,21 @@ transition-duration:.01ms!important;
 </form>
 </div>
 
-<div class="filters">
-<button class="active" onclick="setCategory('All',this)">All</button>
-<button onclick="setCategory('Action',this)">Action</button>
-<button onclick="setCategory('Drama',this)">Drama</button>
-<button onclick="setCategory('Sci-Fi',this)">Sci-Fi</button>
-<button onclick="setCategory('Animation',this)">Animation</button>
+<div class="filters" id="filters">
+<button class="active" data-category="All">All</button>
+<button data-category="Action">Action</button>
+<button data-category="Drama">Drama</button>
+<button data-category="Sci-Fi">Sci-Fi</button>
+<button data-category="Animation">Animation</button>
 </div>
 
 <section class="section" id="movies">
 <div class="heading">
 <h2>Popular Movies</h2>
-<span>EXPLORE ALL</span>
+<span id="movieCount">LOADING...</span>
 </div>
-
-<div class="movies" id="movieList">
-
-<div class="movie" data-category="Sci-Fi">
-<a class="movie-link" href="movie.html?movie=interstellar" target="_blank" rel="noopener">
-<div class="poster">
-<img src="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6M7C1g5h.jpg" alt="Interstellar" loading="lazy">
-<span class="poster-label">POPULAR</span>
-</div>
-<div class="info">
-<h3>Interstellar</h3>
-<p>Sci-Fi • 2014</p>
-</div>
-</a>
-<div class="info" style="padding-top:0">
-<div class="movie-actions">
-<a class="watch" href="https://www.youtube.com/results?search_query=Interstellar+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a>
-<a class="watch stream" href="https://www.justwatch.com/in/search?q=Interstellar" target="_blank" rel="noopener">Where to Watch ↗</a>
-</div>
-</div>
-</div>
-
-<div class="movie" data-category="Sci-Fi">
-<a class="movie-link" href="movie.html?movie=dune" target="_blank" rel="noopener">
-<div class="poster">
-<img src="https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg" alt="Dune" loading="lazy">
-</div>
-<div class="info">
-<h3>Dune</h3>
-<p>Sci-Fi • 2021</p>
-</div>
-</a>
-<div class="info" style="padding-top:0">
-<div class="movie-actions">
-<a class="watch" href="https://www.youtube.com/results?search_query=Dune+2021+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a>
-<a class="watch stream" href="https://www.justwatch.com/in/search?q=Dune" target="_blank" rel="noopener">Where to Watch ↗</a>
-</div>
-</div>
-</div>
-
-<div class="movie" data-category="Action">
-<a class="movie-link" href="movie.html?movie=spiderman" target="_blank" rel="noopener">
-<div class="poster">
-<img src="https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" alt="Spider-Man No Way Home" loading="lazy">
-</div>
-<div class="info">
-<h3>Spider-Man: No Way Home</h3>
-<p>Action • 2021</p>
-</div>
-</a>
-<div class="info" style="padding-top:0">
-<div class="movie-actions">
-<a class="watch" href="https://www.youtube.com/results?search_query=Spider-Man+No+Way+Home+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a>
-<a class="watch stream" href="https://www.justwatch.com/in/search?q=Spider-Man%20No%20Way%20Home" target="_blank" rel="noopener">Where to Watch ↗</a>
-</div>
-</div>
-</div>
-
-<div class="movie" data-category="Action">
-<a class="movie-link" href="movie.html?movie=inception" target="_blank" rel="noopener">
-<div class="poster">
-<img src="https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg" alt="Inception" loading="lazy">
-</div>
-<div class="info">
-<h3>Inception</h3>
-<p>Action • 2010</p>
-</div>
-</a>
-<div class="info" style="padding-top:0">
-<div class="movie-actions">
-<a class="watch" href="https://www.youtube.com/results?search_query=Inception+official+trailer" target="_blank" rel="noopener">Find Trailer ↗</a>
-<a class="watch stream" href="https://www.justwatch.com/in/search?q=Inception" target="_blank" rel="noopener">Where to Watch ↗</a>
-</div>
-</div>
-</div>
-
-</div>
-
+<div class="status" id="loadStatus">Connecting to movie library...</div>
+<div class="movies" id="movieList"></div>
 <div class="empty" id="empty">No movies found. Try another search.</div>
 </section>
 
@@ -643,230 +253,323 @@ Discover movies. Find official places to watch.<br>
 © 2026 FLIXSTREAM. All rights reserved.
 </footer>
 
-<!-- POPUP WINDOW -->
 <div id="sitePopup">
- <div class="popup-top">
-  <span class="popup-title">FEATURED</span>
-  <button id="popupClose" aria-label="Close popup">×</button>
- </div>
-
- <div id="popupMediaHolder">
-  <a id="popupMediaLink" href="#" target="_blank" rel="noopener">
-   <img id="popupMedia" alt="Featured promotion">
-  </a>
- </div>
-
- <a id="popupVisitLink" href="#" target="_blank" rel="noopener">Visit ↗</a>
-
- <div class="popup-controls">
-  <span class="popup-hint" id="popupHint">Tap to visit</span>
-  <button id="popupSound" style="display:none">Unmute 🔊</button>
- </div>
+<div class="popup-top">
+<span class="popup-title">FEATURED</span>
+<button id="popupClose" aria-label="Close popup">×</button>
+</div>
+<div id="popupMediaHolder"></div>
+<a id="popupVisitLink" href="#" target="_blank" rel="noopener">Visit ↗</a>
+<div class="popup-controls">
+<span class="popup-hint" id="popupHint">Tap to visit</span>
+<button id="popupSound" style="display:none">Mute 🔊</button>
+</div>
 </div>
 
-<!-- THEME SYSTEM -->
-<script>
-(function(){
-const themeSelect=document.getElementById("themeSelect");
-const allowedThemes=["default","summer","winter","diwali","christmas","holi"];
-
-function applyTheme(theme){
-if(!allowedThemes.includes(theme)){
-theme="default";
-}
-
-document.documentElement.dataset.theme=theme;
-themeSelect.value=theme;
-
-const themeColors={
-default:"#080b12",
-summer:"#07151b",
-winter:"#081321",
-diwali:"#160d08",
-christmas:"#08130e",
-holi:"#130b1c"
-};
-
-document.querySelector('meta[name="theme-color"]').setAttribute(
-"content",themeColors[theme]
-);
-
-try{
-localStorage.setItem("flixstream-theme",theme);
-}catch(error){
-console.warn("Theme preference could not be saved.");
-}
-}
-
-let savedTheme="default";
-
-try{
-savedTheme=localStorage.getItem("flixstream-theme") || "default";
-}catch(error){}
-
-applyTheme(savedTheme);
-
-themeSelect.addEventListener("change",function(){
-applyTheme(this.value);
-});
-})();
-</script>
-
-<!-- SEARCH AND FILTER -->
-<script>
-let category="All";
-
-function filterMovies(){
-const query=document.getElementById("search").value.trim().toLowerCase();
-let visible=0;
-
-document.querySelectorAll("#movieList .movie").forEach(movie=>{
-const matchText=movie.innerText.toLowerCase().includes(query);
-const movieCategory=(movie.dataset.category || "").toLowerCase();
-const matchCategory=category==="All"||movieCategory.includes(category.toLowerCase());
-
-movie.style.display=matchText&&matchCategory?"block":"none";
-if(matchText&&matchCategory)visible++;
-});
-
-document.getElementById("empty").style.display=visible?"none":"block";
-}
-
-function setCategory(value,button){
-category=value;
-document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
-button.classList.add("active");
-filterMovies();
-}
-
-document.getElementById("searchForm").addEventListener("submit",function(event){
-event.preventDefault();
-filterMovies();
-document.getElementById("movies").scrollIntoView({behavior:"smooth"});
-});
-
-document.getElementById("search").addEventListener("input",filterMovies);
-window.filterMovies=filterMovies;
-</script>
-
-<!-- FIREBASE -->
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 import {
-getFirestore,
-collection,
-getDocs,
-doc,
-getDoc
+getFirestore,collection,getDocs,doc,getDoc,onSnapshot
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
-const firebaseConfig = {
-apiKey: "AIzaSyA6Boo_uo8T8tw9GXd0GB16f6VTucF0s904",
-authDomain: "flixstream-b6d48.firebaseapp.com",
-projectId: "flixstream-b6d48",
-storageBucket: "flixstream-b6d48.firebasestorage.app",
-messagingSenderId: "161127372124",
-appId: "1:161127372124:web:5c91328cf68bd2b8021d99"
+const firebaseConfig={
+apiKey:"AIzaSyA6Boo_uo8Ttw9GXd0GB16f6VTucF0s904",
+authDomain:"flixstream-b6d48.firebaseapp.com",
+projectId:"flixstream-b6d48",
+storageBucket:"flixstream-b6d48.firebasestorage.app",
+messagingSenderId:"161127372124",
+appId:"1:127372124:web:5c91328cf68bd2b8021d99"
 };
 
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 
-function safe(value){
-return String(value || "").replace(/[&<>"']/g,c=>({
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#39;"
-})[c]);
-}
+const movieList=document.getElementById("movieList");
+const loadStatus=document.getElementById("loadStatus");
+const movieCount=document.getElementById("movieCount");
+const empty=document.getElementById("empty");
 
+let allMovies=[];
+let activeCategory="All";
+
+function clean(value){
+return String(value??"").trim();
+}
 function safeUrl(value){
 try{
-const url=new URL(String(value || ""));
-return url.protocol==="https:"||url.protocol==="http:"?url.href:"";
-}catch{
-return "";
+const u=new URL(clean(value));
+return ["https:","http:"].includes(u.protocol)?u.href:"";
+}catch{return "";}
 }
+function makeText(tag,className,text){
+const el=document.createElement(tag);
+if(className)el.className=className;
+el.textContent=text;
+return el;
 }
 
-/* LOAD WEBSITE POPUP */
-async function loadWebsitePopup(){
+function normalizeMovie(id,data){
+return {
+id,
+title:clean(data.title||data.name)||"Untitled Movie",
+year:clean(data.year||data.releaseYear),
+genre:clean(data.genre),
+rating:clean(data.rating),
+poster:safeUrl(data.poster||data.posterUrl),
+trailer:safeUrl(data.trailer||data.trailerUrl),
+watch:safeUrl(data.watch||data.watchUrl||data.watchLink),
+story:clean(data.story)
+};
+}
+
+function renderMovies(){
+const query=clean(document.getElementById("search").value).toLowerCase();
+movieList.replaceChildren();
+let visible=0;
+
+const filtered=allMovies.filter(movie=>{
+const text=[movie.title,movie.year,movie.genre,movie.story].join(" ").toLowerCase();
+const categoryMatch=activeCategory==="All"||
+movie.genre.toLowerCase().includes(activeCategory.toLowerCase());
+return text.includes(query)&&categoryMatch;
+});
+
+filtered.forEach(movie=>{
+visible++;
+const card=document.createElement("article");
+card.className="movie";
+card.dataset.category=movie.genre;
+
+const link=document.createElement("a");
+link.className="movie-link";
+link.href="movie.html?movie="+encodeURIComponent(movie.id);
+
+const poster=document.createElement("div");
+poster.className="poster";
+
+if(movie.poster){
+const img=document.createElement("img");
+img.src=movie.poster;
+img.alt=movie.title+" poster";
+img.loading="lazy";
+img.onerror=()=>{
+img.remove();
+poster.append(makeText("div","poster-placeholder","Poster unavailable"));
+};
+poster.append(img);
+}else{
+poster.append(makeText("div","poster-placeholder","Poster unavailable"));
+}
+
+const label=makeText("span","poster-label","MOVIE");
+poster.append(label);
+
+const info=document.createElement("div");
+info.className="info";
+info.append(makeText("h3","",movie.title));
+info.append(makeText("p","",[movie.genre,movie.year].filter(Boolean).join(" • ")||"Movie"));
+
+link.append(poster,info);
+card.append(link);
+
+const actionsInfo=document.createElement("div");
+actionsInfo.className="info";
+actionsInfo.style.paddingTop="0";
+
+const actions=document.createElement("div");
+actions.className="movie-actions";
+
+if(movie.trailer){
+const trailer=document.createElement("a");
+trailer.className="watch";
+trailer.href=movie.trailer;
+trailer.target="_blank";
+trailer.rel="noopener";
+trailer.textContent="Watch Trailer ↗";
+actions.append(trailer);
+}else{
+const details=document.createElement("a");
+details.className="watch";
+details.href=link.href;
+details.textContent="Movie Details";
+actions.append(details);
+}
+
+if(movie.watch){
+const watch=document.createElement("a");
+watch.className="watch stream";
+watch.href=movie.watch;
+watch.target="_blank";
+watch.rel="noopener";
+watch.textContent="Where to Watch ↗";
+actions.append(watch);
+}else{
+const details=document.createElement("a");
+details.className="watch stream";
+details.href=link.href;
+details.textContent="Details ↗";
+actions.append(details);
+}
+
+actionsInfo.append(actions);
+card.append(actionsInfo);
+movieList.append(card);
+});
+
+movieCount.textContent=visible+" MOVIES";
+empty.style.display=visible?"none":"block";
+}
+
+document.getElementById("search").addEventListener("input",renderMovies);
+document.getElementById("searchForm").addEventListener("submit",event=>{
+event.preventDefault();
+renderMovies();
+document.getElementById("movies").scrollIntoView({behavior:"smooth"});
+});
+
+document.querySelectorAll("#filters button").forEach(button=>{
+button.addEventListener("click",()=>{
+activeCategory=button.dataset.category;
+document.querySelectorAll("#filters button").forEach(b=>b.classList.remove("active"));
+button.classList.add("active");
+renderMovies();
+});
+});
+
+/* LOAD MOVIES FROM FIRESTORE */
+async function loadMovies(){
+try{
+loadStatus.textContent="Loading movies from Firebase...";
+const snap=await getDocs(collection(db,"movies"));
+allMovies=snap.docs.map(item=>normalizeMovie(item.id,item.data()));
+allMovies.sort((a,b)=>a.title.localeCompare(b.title));
+renderMovies();
+loadStatus.textContent=allMovies.length?
+"Movies loaded successfully.":"No movies have been added yet.";
+}catch(error){
+console.error("Movie loading error:",error);
+loadStatus.textContent="Could not load movies. Please refresh the page.";
+movieCount.textContent="0 MOVIES";
+}
+}
+loadMovies();
+
+/* LOAD ADMIN THEME */
+function applyTheme(theme){
+const allowed=["default","summer","winter","diwali","christmas","holi"];
+if(!allowed.includes(theme))theme="default";
+document.documentElement.dataset.theme=theme;
+const colors={
+default:"#080b12",summer:"#07151b",winter:"#081321",
+diwali:"#160d08",christmas:"#08130e",holi:"#130b1c"
+};
+document.querySelector('meta[name="theme-color"]').content=colors[theme];
+}
+onSnapshot(doc(db,"siteSettings","theme"),snap=>{
+const data=snap.exists()?snap.data():{};
+applyTheme(data.theme||"default");
+},error=>{
+console.error("Theme loading error:",error);
+applyTheme("default");
+});
+
+/* POPUP MANAGER */
 const popup=document.getElementById("sitePopup");
-const mediaLink=document.getElementById("popupMediaLink");
+const holder=document.getElementById("popupMediaHolder");
+const visitLink=document.getElementById("popupVisitLink");
 const hint=document.getElementById("popupHint");
 const soundButton=document.getElementById("popupSound");
-const visitLink=document.getElementById("popupVisitLink");
 
+function closePopup(){
+popup.classList.remove("show");
+const video=holder.querySelector("video");
+if(video)video.pause();
+}
+document.getElementById("popupClose").addEventListener("click",closePopup);
+
+async function loadPopup(){
 try{
-const popupSnap=await getDoc(doc(db,"siteSettings","popup"));
-if(!popupSnap.exists()) return;
-
-const data=popupSnap.data();
-if(data.enabled!==true) return;
+const snap=await getDoc(doc(db,"siteSettings","popup"));
+if(!snap.exists())return;
+const data=snap.data();
+if(data.enabled!==true)return;
 
 const mediaUrl=safeUrl(data.mediaUrl);
 const destination=safeUrl(data.destinationUrl);
 const type=data.mediaType;
+if(!mediaUrl||!["image","video","youtube"].includes(type))return;
 
-if(!mediaUrl || !["image","video","youtube"].includes(type)) return;
-
-const oldMedia=document.getElementById("popupMedia");
-let media;
-
-soundButton.style.display="none";
-soundButton.onclick=null;
+holder.replaceChildren();
 visitLink.classList.remove("show");
 visitLink.removeAttribute("href");
+soundButton.style.display="none";
+soundButton.onclick=null;
 
 if(type==="youtube"){
-const youtubeUrl=new URL(mediaUrl);
-const allowedHosts=["www.youtube-nocookie.com","youtube-nocookie.com"];
-
-if(!allowedHosts.includes(youtubeUrl.hostname) ||
-!youtubeUrl.pathname.startsWith("/embed/")){
-return;
+let youtubeId="";
+try{
+const u=new URL(mediaUrl);
+if(u.hostname==="youtu.be")youtubeId=u.pathname.slice(1);
+else if(["youtube.com","www.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].includes(u.hostname)){
+if(u.pathname.startsWith("/embed/"))youtubeId=u.pathname.split("/")[2];
+else youtubeId=u.searchParams.get("v")||"";
 }
+}catch{}
+if(!/^[a-zA-Z0-9_-]{11}$/.test(youtubeId))return;
 
-media=document.createElement("iframe");
-media.id="popupMedia";
-media.className="youtube-frame";
-media.src=mediaUrl;
-media.title="Featured YouTube video";
-media.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-media.allowFullscreen=true;
-media.referrerPolicy="strict-origin-when-cross-origin";
-media.loading="lazy";
-
-mediaLink.replaceWith(media);
-hint.textContent="YouTube video • Use player controls";
+const frame=document.createElement("iframe");
+frame.id="popupMedia";
+frame.className="youtube-frame";
+frame.src="https://www.youtube-nocookie.com/embed/"+youtubeId+"?autoplay=1&mute=1&playsinline=1";
+frame.title="Featured video";
+frame.allow="autoplay; encrypted-media; picture-in-picture";
+frame.allowFullscreen=true;
+holder.append(frame);
+hint.textContent="Featured YouTube video";
+}else if(type==="video"){
+const video=document.createElement("video");
+video.id="popupMedia";
+video.src=mediaUrl;
+video.autoplay=true;
+video.loop=true;
+video.playsInline=true;
+video.controls=true;
+video.muted=true;
+video.preload="metadata";
+holder.append(video);
+hint.textContent="Video promotion";
+soundButton.style.display="inline-block";
+soundButton.textContent="Unmute 🔊";
+soundButton.onclick=()=>{
+video.muted=!video.muted;
+soundButton.textContent=video.muted?"Unmute 🔊":"Mute 🔇";
+if(!video.muted)video.play().catch(()=>{});
+};
+video.play().catch(()=>{});
+}else{
+const img=document.createElement("img");
+img.id="popupMedia";
+img.src=mediaUrl;
+img.alt="Featured promotion";
+holder.append(img);
+hint.textContent="Tap to visit";
+}
 
 if(destination){
 visitLink.href=destination;
 visitLink.classList.add("show");
 }
+popup.classList.add("show");
+}catch(error){
+console.error("Popup loading error:",error);
+}
+}
+loadPopup();
 
-}else{
-media=document.createElement(type==="video"?"video":"img");
-media.id="popupMedia";
-media.className=oldMedia.className;
-media.style.cssText=oldMedia.style.cssText;
-
-if(type==="video"){
-media.src=mediaUrl;
-media.autoplay=true;
-media.loop=true;
-media.playsInline=true;
-media.controls=true;
-media.muted=false;
-media.preload="metadata";
-
-media.addEventListener("click",event=>event.stopPropagation());
-
-soundButton.style.display="inline-block";
-soundButton.textContent="Mute 🔊";
-
-soundButton.onclick=async()=>{
-media.muted=!media.muted;
-soundButton.textContent=media.muted?"Unmute 🔊
+/* SHOW APP ERRORS IN CONSOLE */
+window.addEventListener("unhandledrejection",event=>{
+console.error("Unexpected error:",event.reason);
+});
+</script>
+</body>
+</html>
