@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +6,6 @@
 <meta name="theme-color" content="#080d12">
 <meta name="description" content="FLIXSTREAM Admin Dashboard">
 <title>FLIXSTREAM Admin</title>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d12;color:#fff;font-family:Arial,sans-serif}
@@ -42,10 +40,16 @@ button:disabled{opacity:.5}
 hr{border:0;border-top:1px solid #293d42;margin:20px 0}
 .note{font-size:13px;color:#aab8bb;line-height:1.5}
 #loginBox{max-width:430px;margin:55px auto}
-@media(max-width:600px){.grid{grid-template-columns:1fr}.container{padding:12px}.panel{padding:14px}.movie-item{align-items:flex-start}.logo{font-size:20px}}
+.theme-status{padding:10px;background:#0a1318;border-radius:7px;margin-top:10px}
+@media(max-width:600px){
+ .grid{grid-template-columns:1fr}
+ .container{padding:12px}
+ .panel{padding:14px}
+ .movie-item{align-items:flex-start}
+ .logo{font-size:20px}
+}
 </style>
 </head>
-
 <body>
 
 <header>
@@ -69,62 +73,34 @@ hr{border:0;border-top:1px solid #293d42;margin:20px 0}
 </section>
 
 <section id="dashboard" class="hidden">
-
  <div id="message" aria-live="polite"></div>
 
  <section class="panel">
   <h2>Movie Manager</h2>
   <form id="movieForm">
    <h3 id="formTitle">Add New Movie</h3>
-
    <div class="grid">
-    <div>
-     <label>Movie Title *</label>
-     <input id="movieTitle" required>
-    </div>
-    <div>
-     <label>Movie ID *</label>
-     <input id="movieId" placeholder="example: interstellar" required>
-    </div>
-    <div>
-     <label>Year</label>
-     <input id="year" placeholder="2026">
-    </div>
-    <div>
-     <label>Genre</label>
-     <input id="genre" placeholder="Action, Sci-Fi">
-    </div>
-    <div>
-     <label>Rating</label>
-     <input id="rating" placeholder="8.5">
-    </div>
-    <div>
-     <label>Director</label>
-     <input id="director">
-    </div>
+    <div><label>Movie Title *</label><input id="movieTitle" required></div>
+    <div><label>Movie ID *</label><input id="movieId" placeholder="interstellar" required></div>
+    <div><label>Year</label><input id="year" placeholder="2026"></div>
+    <div><label>Genre</label><input id="genre" placeholder="Action, Sci-Fi"></div>
+    <div><label>Rating</label><input id="rating" placeholder="8.5"></div>
+    <div><label>Director</label><input id="director"></div>
    </div>
-
    <label>Cast (comma separated)</label>
    <input id="cast" placeholder="Actor 1, Actor 2">
-
    <label>Story / Description</label>
    <textarea id="story"></textarea>
-
    <label>Poster Image URL</label>
    <input id="poster" type="url" placeholder="https://...">
-
    <label>Screenshots URLs (comma separated)</label>
    <textarea id="screenshots" placeholder="https://image1.jpg, https://image2.jpg"></textarea>
-
    <label>Trailer URL</label>
    <input id="trailer" type="url" placeholder="YouTube or trailer URL">
-
    <label>Where to Watch URL</label>
    <input id="watchLink" type="url" placeholder="Official streaming link">
-
    <label>Download URL (only authorized links)</label>
    <input id="downloadLink" type="url" placeholder="Official download link">
-
    <button id="saveBtn" type="submit">Save Movie</button>
    <button id="clearBtn" type="button" class="secondary">Clear Form</button>
   </form>
@@ -149,86 +125,60 @@ hr{border:0;border-top:1px solid #293d42;margin:20px 0}
    <option value="holi">Holi</option>
   </select>
   <button id="saveThemeBtn" type="button">Apply Theme</button>
+  <button id="resetThemeBtn" type="button" class="secondary">Reset Default Theme</button>
   <div id="themeMessage" aria-live="polite"></div>
+  <div id="currentTheme" class="theme-status note">Current theme: Default</div>
  </section>
 
  <section class="panel">
   <h2>Homepage Popup Manager</h2>
-  <p class="note">Image ya video ka public URL yahan paste karo. Phone se direct upload abhi is version mein available nahi hai.</p>
-
+  <p class="note">Image ya video ka public URL yahan paste karo. Phone se direct upload abhi available nahi hai.</p>
   <label>Popup Media Type</label>
   <select id="popupType">
    <option value="image">Image</option>
    <option value="video">Direct MP4 Video</option>
    <option value="youtube">YouTube Video</option>
   </select>
-
   <label>Image / Video URL</label>
   <input id="popupMedia" type="url" placeholder="https://...">
-
   <label>Click karne par kahan jana chahiye? (Optional)</label>
   <input id="popupDestination" type="url" placeholder="https://...">
-
   <div class="checkrow">
    <input id="popupEnabled" type="checkbox">
    <label for="popupEnabled">Enable popup on homepage</label>
   </div>
-
   <div class="preview">
    <h3>Preview</h3>
    <div id="popupPreview" class="note">Preview will appear here.</div>
   </div>
-
   <button id="savePopupBtn" type="button">Save Popup</button>
   <button id="disablePopupBtn" type="button" class="danger">Turn Popup Off</button>
   <div id="popupMessage" aria-live="polite"></div>
  </section>
-
 </section>
 </div>
 
-<!-- Prevent browser's default form navigation even if Firebase module fails -->
 <script>
-document.getElementById("loginForm").addEventListener("submit",function(e){
- e.preventDefault();
-});
-document.getElementById("movieForm").addEventListener("submit",function(e){
- e.preventDefault();
-});
-window.addEventListener("error",function(e){
+document.getElementById("loginForm").addEventListener("submit",e=>e.preventDefault());
+document.getElementById("movieForm").addEventListener("submit",e=>e.preventDefault());
+window.addEventListener("error",e=>{
  const box=document.getElementById("loginMessage");
- if(box && document.getElementById("loginBox").classList.contains("hidden")){
-  box.textContent="Dashboard error: "+(e.message || "Unknown error");
- }
+ if(box)box.textContent="App error: "+(e.message||"Unknown error");
 });
-window.addEventListener("unhandledrejection",function(e){
+window.addEventListener("unhandledrejection",e=>{
  const box=document.getElementById("loginMessage");
- if(box) box.textContent="App error: "+(e.reason?.message || String(e.reason));
+ if(box)box.textContent="App error: "+(e.reason?.message||String(e.reason));
 });
 </script>
 
 <script type="module">
-import {initializeApp}
- from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
-
+import {initializeApp} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 import {
- getAuth,
- signInWithEmailAndPassword,
- signOut,
- onAuthStateChanged,
- setPersistence,
- browserLocalPersistence
+ getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,
+ setPersistence,browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
-
 import {
- getFirestore,
- collection,
- doc,
- getDoc,
- getDocs,
- setDoc,
- deleteDoc,
- serverTimestamp
+ getFirestore,collection,doc,getDoc,getDocs,setDoc,deleteDoc,serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const firebaseConfig={
@@ -239,15 +189,11 @@ const firebaseConfig={
  messagingSenderId:"161127372124",
  appId:"1:161127372124:web:5c91328cf68bd2b8021d99"
 };
-
 const ADMIN_UID="g9j2r2DbtIYxNkXupeJyoRL9qUC3";
-
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
-
 const $=id=>document.getElementById(id);
-
 let editingId=null;
 let allMovies=[];
 let dashboardLoading=false;
@@ -258,16 +204,11 @@ function message(id,text,type="success"){
  el.textContent=text;
  el.className="message "+type;
 }
-
 function clearMessage(id){
  const el=$(id);
  if(el){el.textContent="";el.className="";}
 }
-
-function isAdmin(user){
- return !!user && user.uid===ADMIN_UID;
-}
-
+function isAdmin(user){return !!user&&user.uid===ADMIN_UID;}
 function validUrl(value){
  if(!value)return "";
  try{
@@ -275,40 +216,32 @@ function validUrl(value){
   return ["http:","https:"].includes(u.protocol)?u.href:"";
  }catch{return "";}
 }
-
 function makeId(value){
- let slug=value.toLowerCase()
-  .trim()
-  .replace(/[^a-z0-9]+/g,"-")
-  .replace(/^-|-$/g,"");
- if(!slug)slug="movie-"+Date.now();
- return slug;
+ let slug=value.toLowerCase().trim()
+  .replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+ return slug||"movie-"+Date.now();
 }
-
 function getYouTubeEmbedUrl(value){
  try{
   const u=new URL(value);
   let id="";
-  if(u.hostname==="youtu.be"){
-   id=u.pathname.slice(1);
-  }else if(u.hostname.includes("youtube.com")){
-   id=u.searchParams.get("v") || "";
+  if(u.hostname==="youtu.be")id=u.pathname.slice(1);
+  else if(u.hostname.includes("youtube.com")){
+   id=u.searchParams.get("v")||"";
    if(!id){
-    const parts=u.pathname.split("/").filter(Boolean);
-    if(["embed","shorts","live"].includes(parts[0]))id=parts[1]||"";
+    const p=u.pathname.split("/").filter(Boolean);
+    if(["embed","shorts","live"].includes(p[0]))id=p[1]||"";
    }
   }
-  if(!/^[a-zA-Z0-9_-]{11}$/.test(id))return "";
-  return "https://www.youtube-nocookie.com/embed/"+id+"?playsinline=1&rel=0";
+  return /^[a-zA-Z0-9_-]{11}$/.test(id)
+   ?"https://www.youtube-nocookie.com/embed/"+id+"?playsinline=1&rel=0":"";
  }catch{return "";}
 }
-
-/* LOGIN */
+ /* LOGIN */
 
 $("loginForm").addEventListener("submit",async e=>{
  e.preventDefault();
  clearMessage("loginMessage");
-
  const email=$("email").value.trim();
  const password=$("password").value;
  const btn=$("loginBtn");
@@ -317,7 +250,6 @@ $("loginForm").addEventListener("submit",async e=>{
   message("loginMessage","Email aur password dono bharo.","error");
   return;
  }
-
  btn.disabled=true;
  btn.textContent="Logging in...";
 
@@ -326,15 +258,12 @@ $("loginForm").addEventListener("submit",async e=>{
   await signInWithEmailAndPassword(auth,email,password);
  }catch(error){
   let msg="Login failed: "+error.message;
-  if(error.code==="auth/invalid-credential" ||
-     error.code==="auth/wrong-password" ||
-     error.code==="auth/user-not-found"){
+  if(["auth/invalid-credential","auth/wrong-password","auth/user-not-found"].includes(error.code))
    msg="Email ya password galat hai.";
-  }else if(error.code==="auth/too-many-requests"){
+  else if(error.code==="auth/too-many-requests")
    msg="Bahut attempts ho gaye. Thodi der baad try karo.";
-  }else if(error.code==="auth/network-request-failed"){
+  else if(error.code==="auth/network-request-failed")
    msg="Internet connection check karo.";
-  }
   message("loginMessage",msg,"error");
  }finally{
   btn.disabled=false;
@@ -355,32 +284,22 @@ onAuthStateChanged(auth,async user=>{
   dashboardLoading=false;
   return;
  }
-
  if(!isAdmin(user)){
   await signOut(auth);
   message("loginMessage","Access denied. Ye account Admin nahi hai.","error");
   return;
  }
-
  $("loginBox").classList.add("hidden");
  $("dashboard").classList.remove("hidden");
  $("logoutBtn").classList.remove("hidden");
-
  if(dashboardLoading)return;
  dashboardLoading=true;
-
  try{
-  await Promise.all([
-   loadMovies(),
-   loadThemeSettings(),
-   loadPopupSettings()
-  ]);
+  await Promise.all([loadMovies(),loadThemeSettings(),loadPopupSettings()]);
   message("message","Admin Dashboard connected successfully.");
  }catch(error){
   message("message","Dashboard load error: "+error.message,"error");
- }finally{
-  dashboardLoading=false;
- }
+ }finally{dashboardLoading=false;}
 });
 
 /* MOVIE MANAGER */
@@ -389,109 +308,71 @@ function clearForm(){
  editingId=null;
  $("formTitle").textContent="Add New Movie";
  $("saveBtn").textContent="Save Movie";
- [
-  "movieTitle","movieId","year","genre","rating",
-  "director","cast","story","poster","screenshots",
-  "trailer","watchLink","downloadLink"
- ].forEach(id=>$(id).value="");
+ ["movieTitle","movieId","year","genre","rating","director","cast",
+ "story","poster","screenshots","trailer","watchLink","downloadLink"]
+ .forEach(id=>$(id).value="");
 }
 
 $("clearBtn").addEventListener("click",clearForm);
 
 $("movieTitle").addEventListener("input",()=>{
- if(!editingId){
-  $("movieId").value=makeId($("movieTitle").value);
- }
+ if(!editingId)$("movieId").value=makeId($("movieTitle").value);
 });
 
 $("movieForm").addEventListener("submit",async e=>{
  e.preventDefault();
  clearMessage("message");
-
- const user=auth.currentUser;
- if(!isAdmin(user)){
-  message("message","Admin login required.","error");
-  return;
+ if(!isAdmin(auth.currentUser)){
+  message("message","Admin login required.","error");return;
  }
 
  const title=$("movieTitle").value.trim();
  const id=makeId($("movieId").value);
- const poster=validUrl($("poster").value.trim());
- const trailer=validUrl($("trailer").value.trim());
- const watch=validUrl($("watchLink").value.trim());
- const downloadLink=validUrl($("downloadLink").value.trim());
-
  if(!title||!id){
-  message("message","Movie title aur ID zaroori hain.","error");
-  return;
+  message("message","Movie title aur ID zaroori hain.","error");return;
  }
 
- const rawScreenshots=$("screenshots").value
-  .split(",")
-  .map(x=>validUrl(x.trim()))
-  .filter(Boolean);
-
+ const screenshots=$("screenshots").value.split(",")
+  .map(x=>validUrl(x.trim())).filter(Boolean);
+ const watch=validUrl($("watchLink").value.trim());
  const movieData={
-  title,
-  name:title,
+  title,name:title,
   year:$("year").value.trim(),
   genre:$("genre").value.trim(),
   rating:$("rating").value.trim(),
   director:$("director").value.trim(),
   cast:$("cast").value.trim(),
   story:$("story").value.trim(),
-  poster,
-  screenshots:rawScreenshots,
-  trailer,
-  watch,
-  watchUrl:watch,
-  watchLink:watch,
-  downloadLink,
+  poster:validUrl($("poster").value.trim()),
+  screenshots,
+  trailer:validUrl($("trailer").value.trim()),
+  watch,watchUrl:watch,watchLink:watch,
+  downloadLink:validUrl($("downloadLink").value.trim()),
   updatedAt:serverTimestamp()
  };
 
  const btn=$("saveBtn");
- btn.disabled=true;
- btn.textContent="Saving...";
-
+ btn.disabled=true;btn.textContent="Saving...";
  try{
-  const movieRef=doc(db,"movies",id);
-  const existing=await getDoc(movieRef);
+  const ref=doc(db,"movies",id);
+  const existing=await getDoc(ref);
 
-  if(existing.exists() && editingId!==id){
-   message("message","Ye Movie ID pehle se maujood hai. Dusri ID use karo.","error");
-   return;
+  if(existing.exists()&&editingId!==id){
+   message("message","Ye Movie ID pehle se maujood hai. Dusri ID use karo.","error");return;
+  }
+  if(!existing.exists()&&editingId){
+   message("message","Edit wali movie nahi mili. List refresh karo.","error");return;
   }
 
-  if(existing.exists() && !editingId){
-   message("message","Duplicate Movie ID. Pehle existing movie edit karo.","error");
-   return;
-  }
-
-  if(!existing.exists() && editingId && editingId!==id){
-   message("message","Movie ID change nahi kar sakte. Purani ID rakho.","error");
-   return;
-  }
-
-  if(!existing.exists() && editingId===id){
-   message("message","Edit wali movie nahi mili. List refresh karo.","error");
-   return;
-  }
-
-  await setDoc(movieRef,{
+  await setDoc(ref,{
    ...movieData,
    createdAt:existing.exists()
-    ?(existing.data().createdAt || serverTimestamp())
+    ?(existing.data().createdAt||serverTimestamp())
     :serverTimestamp()
   });
-
-  message("message",existing.exists()
-   ?"Movie updated successfully!"
-   :"Movie added successfully!");
-
+  message("message",existing.exists()?"Movie updated successfully!":"Movie added successfully!");
   clearForm();
   await loadMovies();
-
  }catch(error){
   message("message","Movie save failed: "+error.message,"error");
  }finally{
@@ -503,10 +384,14 @@ $("movieForm").addEventListener("submit",async e=>{
 async function loadMovies(){
  const list=$("movieList");
  list.textContent="Loading movies...";
-
  try{
   const snap=await getDocs(collection(db,"movies"));
   allMovies=snap.docs.map(d=>({id:d.id,...d.data()}));
+  allMovies.sort((a,b)=>{
+   const ta=a.createdAt?.toMillis?.()||0;
+   const tb=b.createdAt?.toMillis?.()||0;
+   return tb-ta;
+  });
   renderMovies();
  }catch(error){
   list.textContent="Movies load error: "+error.message;
@@ -517,56 +402,39 @@ async function loadMovies(){
 function renderMovies(){
  const list=$("movieList");
  const search=$("movieSearch").value.trim().toLowerCase();
-
  list.replaceChildren();
-
  const filtered=allMovies.filter(m=>
-  (m.title||m.name||m.id).toLowerCase().includes(search)
+  String(m.title||m.name||m.id).toLowerCase().includes(search)
  );
-
- if(!filtered.length){
-  list.textContent="No movies found.";
-  return;
- }
+ if(!filtered.length){list.textContent="No movies found.";return;}
 
  filtered.forEach(movie=>{
   const item=document.createElement("div");
   item.className="movie-item";
-
-  if(movie.poster){
+  const poster=validUrl(movie.poster||movie.posterUrl||"");
+  if(poster){
    const img=document.createElement("img");
-   img.src=validUrl(movie.poster);
-   img.alt="";
+   img.src=poster;img.alt="";
    img.onerror=()=>img.remove();
    item.appendChild(img);
   }
-
   const info=document.createElement("div");
   info.className="movie-info";
-
   const title=document.createElement("strong");
   title.textContent=movie.title||movie.name||"Untitled";
-  info.appendChild(title);
-
   const detail=document.createElement("div");
   detail.className="small";
   detail.textContent="ID: "+movie.id+" | "+(movie.year||"Year not set");
-  info.appendChild(detail);
-
   const actions=document.createElement("div");
   actions.className="actions";
-
   const edit=document.createElement("button");
   edit.textContent="Edit";
   edit.addEventListener("click",()=>editMovie(movie.id));
-
   const del=document.createElement("button");
-  del.textContent="Delete";
-  del.className="danger";
+  del.textContent="Delete";del.className="danger";
   del.addEventListener("click",()=>deleteMovie(movie.id));
-
   actions.append(edit,del);
-  info.appendChild(actions);
+  info.append(title,detail,actions);
   item.appendChild(info);
   list.appendChild(item);
  });
@@ -575,97 +443,107 @@ function renderMovies(){
 $("movieSearch").addEventListener("input",renderMovies);
 
 function editMovie(id){
- const movie=allMovies.find(m=>m.id===id);
- if(!movie)return;
-
+ const m=allMovies.find(x=>x.id===id);
+ if(!m)return;
  editingId=id;
  $("formTitle").textContent="Edit Movie";
  $("saveBtn").textContent="Update Movie";
-
- $("movieTitle").value=movie.title||movie.name||"";
+ $("movieTitle").value=m.title||m.name||"";
  $("movieId").value=id;
- $("year").value=movie.year||"";
- $("genre").value=movie.genre||"";
- $("rating").value=movie.rating||"";
- $("director").value=movie.director||"";
- $("cast").value=Array.isArray(movie.cast)?movie.cast.join(", "):(movie.cast||"");
- $("story").value=movie.story||"";
- $("poster").value=movie.poster||movie.posterUrl||"";
- $("screenshots").value=Array.isArray(movie.screenshots)?movie.screenshots.join(", "):"";
- $("trailer").value=movie.trailer||movie.trailerUrl||"";
- $("watchLink").value=movie.watch||movie.watchUrl||movie.watchLink||"";
- $("downloadLink").value=movie.downloadLink||movie.download||"";
-
+ $("year").value=m.year||"";
+ $("genre").value=m.genre||"";
+ $("rating").value=m.rating||"";
+ $("director").value=m.director||"";
+ $("cast").value=Array.isArray(m.cast)?m.cast.join(", "):(m.cast||"");
+ $("story").value=m.story||"";
+ $("poster").value=m.poster||m.posterUrl||"";
+ $("screenshots").value=Array.isArray(m.screenshots)?m.screenshots.join(", "):"";
+ $("trailer").value=m.trailer||m.trailerUrl||"";
+ $("watchLink").value=m.watch||m.watchUrl||m.watchLink||"";
+ $("downloadLink").value=m.downloadLink||m.download||"";
  $("movieForm").scrollIntoView({behavior:"smooth"});
 }
 
 async function deleteMovie(id){
  if(!confirm("Kya tum sach mein ye movie delete karna chahte ho?"))return;
-
  try{
   await deleteDoc(doc(db,"movies",id));
   message("message","Movie deleted successfully.");
   if(editingId===id)clearForm();
   await loadMovies();
- }catch(error){
-  message("message","Delete failed: "+error.message,"error");
+ }catch(error){message("message","Delete failed: "+error.message,"error");}
  }
+ /* GLOBAL THEME MANAGER */
+
+const allowedThemes=["default","summer","winter","diwali","christmas","holi"];
+
+function showCurrentTheme(theme){
+ const names={
+  default:"Default - Dark Green",
+  summer:"Summer",
+  winter:"Winter",
+  diwali:"Diwali",
+  christmas:"Christmas",
+  holi:"Holi"
+ };
+ $("currentTheme").textContent="Current theme: "+(names[theme]||names.default);
 }
-
-/* THEME MANAGER */
-
-const allowedThemes=[
- "default","summer","winter","diwali","christmas","holi"
-];
 
 async function loadThemeSettings(){
  try{
   const snap=await getDoc(doc(db,"siteSettings","theme"));
   const theme=snap.exists()?snap.data().theme:"default";
-  $("themeSelect").value=allowedThemes.includes(theme)?theme:"default";
+  const safe=allowedThemes.includes(theme)?theme:"default";
+  $("themeSelect").value=safe;
+  showCurrentTheme(safe);
  }catch(error){
   message("themeMessage","Theme load error: "+error.message,"error");
  }
 }
 
+async function saveTheme(theme){
+ if(!allowedThemes.includes(theme))throw new Error("Invalid theme.");
+ await setDoc(doc(db,"siteSettings","theme"),{
+  theme,
+  updatedAt:serverTimestamp()
+ });
+ $("themeSelect").value=theme;
+ showCurrentTheme(theme);
+}
+
 $("saveThemeBtn").addEventListener("click",async()=>{
  try{
-  const theme=$("themeSelect").value;
-  if(!allowedThemes.includes(theme))throw new Error("Invalid theme.");
-
-  await setDoc(doc(db,"siteSettings","theme"),{
-   theme,
-   updatedAt:serverTimestamp()
-  });
-
+  await saveTheme($("themeSelect").value);
   message("themeMessage","Theme setting saved. Homepage connection is still required.");
  }catch(error){
   message("themeMessage","Theme save failed: "+error.message,"error");
  }
 });
 
-/* POPUP MANAGER */
+$("resetThemeBtn").addEventListener("click",async()=>{
+ if(!confirm("Website theme ko Default par reset karna hai?"))return;
+ try{
+  await saveTheme("default");
+  message("themeMessage","Default theme restored successfully.");
+ }catch(error){
+  message("themeMessage","Theme reset failed: "+error.message,"error");
+ }
+});
+
+/* HOMEPAGE POPUP MANAGER */
 
 function makePopupPreview(){
  const box=$("popupPreview");
  box.replaceChildren();
-
  const type=$("popupType").value;
- const url=$("popupMedia").value.trim();
+ const safe=validUrl($("popupMedia").value.trim());
 
- if(!url){
-  box.textContent="Media URL daalne par preview dikhega.";
-  return;
- }
-
- const safe=validUrl(url);
  if(!safe){
-  box.textContent="Valid HTTP/HTTPS URL daalo.";
+  box.textContent="Valid media URL daalne par preview dikhega.";
   return;
  }
 
  let el;
-
  if(type==="image"){
   el=document.createElement("img");
   el.src=safe;
@@ -690,7 +568,9 @@ function makePopupPreview(){
   el.allowFullscreen=true;
   el.title="YouTube preview";
  }
-
+ el.onerror=()=>{
+  box.textContent="Preview load nahi ho paya. URL check karo.";
+ };
  box.appendChild(el);
 }
 
@@ -703,4 +583,60 @@ async function loadPopupSettings(){
   if(!snap.exists())return;
 
   const data=snap.data();
-  $("popupTy
+  $("popupType").value=["image","video","youtube"].includes(data.type)?data.type:"image";
+  $("popupMedia").value=data.mediaUrl||"";
+  $("popupDestination").value=data.destinationUrl||"";
+  $("popupEnabled").checked=data.enabled===true;
+  makePopupPreview();
+ }catch(error){
+  message("popupMessage","Popup load error: "+error.message,"error");
+ }
+}
+
+$("savePopupBtn").addEventListener("click",async()=>{
+ try{
+  const type=$("popupType").value;
+  const mediaUrl=validUrl($("popupMedia").value.trim());
+  const destinationUrl=validUrl($("popupDestination").value.trim());
+
+  if(!mediaUrl)throw new Error("Valid image/video URL daalo.");
+  if(type==="youtube"&&!getYouTubeEmbedUrl(mediaUrl))
+   throw new Error("Valid YouTube URL daalo.");
+
+  await setDoc(doc(db,"siteSettings","popup"),{
+   type,
+   mediaUrl,
+   destinationUrl,
+   enabled:$("popupEnabled").checked,
+   updatedAt:serverTimestamp()
+  });
+
+  message("popupMessage","Popup settings saved successfully.");
+ }catch(error){
+  message("popupMessage","Popup save failed: "+error.message,"error");
+ }
+});
+
+$("disablePopupBtn").addEventListener("click",async()=>{
+ try{
+  await setDoc(doc(db,"siteSettings","popup"),{
+   type:$("popupType").value,
+   mediaUrl:validUrl($("popupMedia").value.trim()),
+   destinationUrl:validUrl($("popupDestination").value.trim()),
+   enabled:false,
+   updatedAt:serverTimestamp()
+  });
+  $("popupEnabled").checked=false;
+  message("popupMessage","Homepage popup turned off.");
+ }catch(error){
+  message("popupMessage","Popup disable failed: "+error.message,"error");
+ }
+});
+
+/* INITIAL STATUS */
+
+message("loginMessage","Firebase connection starting...");
+
+</script>
+</body>
+</html>
