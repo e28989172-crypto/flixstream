@@ -333,6 +333,12 @@ projectId:"flixstream-b6d48",
 storageBucket:"flixstream-b6d48.firebasestorage.app",
 messagingSenderId:"161127372124",
 appId:"1:161127372124:web:5c91328cf68bd2b8021d99"
+  const shareX=document.getElementById("popupShareX");
+
+shareX.style.display="inline-block";
+shareX.href="https://twitter.com/intent/tweet?text="+
+encodeURIComponent("Check out this featured content on FLIXSTREAM!")+
+"&url="+encodeURIComponent(window.location.href);
 };
 
 const app=initializeApp(firebaseConfig);
