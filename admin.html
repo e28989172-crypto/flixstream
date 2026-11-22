@@ -507,10 +507,13 @@ async function loadThemeSettings(){
 
 async function saveTheme(theme){
  if(!allowedThemes.includes(theme))throw new Error("Invalid theme.");
+
  await setDoc(doc(db,"siteSettings","theme"),{
   theme,
+  mode:theme==="auto"?"auto":"manual",
   updatedAt:serverTimestamp()
  });
+
  $("themeSelect").value=theme;
  showCurrentTheme(theme);
 }
