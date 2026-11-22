@@ -318,9 +318,10 @@ function clearForm(){
  editingId=null;
  $("formTitle").textContent="Add New Movie";
  $("saveBtn").textContent="Save Movie";
- ["movieTitle","movieId","year","genre","rating","director","cast",
- "story","poster","screenshots","trailer","watchLink","downloadLink"]
- .forEach(id=>$(id).value="");
+["movieTitle","movieId","year","genre","rating","director","cast",
+"story","poster","screenshots","trailer","watchLink",
+"download720","download1080","download2k"]
+.forEach(id=>$(id).value="");
 }
 
 $("clearBtn").addEventListener("click",clearForm);
@@ -357,7 +358,9 @@ $("movieForm").addEventListener("submit",async e=>{
   screenshots,
   trailer:validUrl($("trailer").value.trim()),
   watch,watchUrl:watch,watchLink:watch,
-  downloadLink:validUrl($("downloadLink").value.trim()),
+  download720:validUrl($("download720").value.trim()),
+download1080:validUrl($("download1080").value.trim()),
+download2k:validUrl($("download2k").value.trim()),
   updatedAt:serverTimestamp()
  };
 
