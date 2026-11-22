@@ -591,6 +591,23 @@ function makePopupPreview(){
  el.onerror=()=>{
   box.textContent="Preview load nahi ho paya. URL check karo.";
  };
+ if(type==="x"){
+ let xScript=document.querySelector(
+  'script[src="https://platform.twitter.com/widgets.js"]'
+ );
+
+ if(!xScript){
+  xScript=document.createElement("script");
+  xScript.src="https://platform.twitter.com/widgets.js";
+  xScript.async=true;
+  document.body.appendChild(xScript);
+  xScript.onload=()=>{
+   if(window.twttr)window.twttr.widgets.load(box);
+  };
+ }else if(window.twttr){
+  window.twttr.widgets.load(box);
+ }
+ }
  box.appendChild(el);
 }
 
