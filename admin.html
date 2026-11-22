@@ -473,7 +473,9 @@ function editMovie(id){
  $("screenshots").value=Array.isArray(m.screenshots)?m.screenshots.join(", "):"";
  $("trailer").value=m.trailer||m.trailerUrl||"";
  $("watchLink").value=m.watch||m.watchUrl||m.watchLink||"";
- $("downloadLink").value=m.downloadLink||m.download||"";
+ $("download720").value=m.download720||"";
+$("download1080").value=m.download1080||"";
+$("download2k").value=m.download2k||"";
  $("movieForm").scrollIntoView({behavior:"smooth"});
 }
 
