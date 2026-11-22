@@ -116,19 +116,22 @@ hr{border:0;border-top:1px solid #293d42;margin:20px 0}
   <h2>Global Theme Manager</h2>
   <p class="note">Choose a theme and save it. Public website par theme dikhane ke liye homepage connection bhi zaroori hai.</p>
   <label>Select Website Theme</label>
-  <select id="themeSelect">
-   <option value="default">Default - Dark Navy + Blue</option>
-   <option value="summer">Summer</option>
-   <option value="winter">Winter</option>
-   <option value="diwali">Diwali</option>
-   <option value="christmas">Christmas</option>
-   <option value="holi">Holi</option>
-  </select>
-  <button id="saveThemeBtn" type="button">Apply Theme</button>
-  <button id="resetThemeBtn" type="button" class="secondary">Reset Default Theme</button>
-  <div id="themeMessage" aria-live="polite"></div>
-  <div id="currentTheme" class="theme-status note">Current theme: Default</div>
- </section>
+
+<select id="themeSelect">
+  <option value="auto">Automatic - Season</option>
+  <option value="default">Default - Dark Navy + Blue</option>
+  <option value="summer">Summer</option>
+  <option value="winter">Winter</option>
+  <option value="diwali">Diwali</option>
+  <option value="christmas">Christmas</option>
+  <option value="holi">Holi</option>
+</select>
+<button id="saveThemeBtn" type="button">Apply Theme</button>
+<button id="resetThemeBtn" type="button" class="secondary">Reset Default Theme</button>
+<div id="themeMessage" aria-live="polite"></div>
+<div id="currentTheme" class="theme-status note">Current theme: Default</div>
+</section>
+
 
  <section class="panel">
   <h2>Homepage Popup Manager</h2>
