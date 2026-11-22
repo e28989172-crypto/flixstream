@@ -561,12 +561,24 @@ function makePopupPreview(){
   el.controls=true;
   el.muted=true;
   el.playsInline=true;
- }else{
+
+}else if(type==="x"){
+  const post=document.createElement("blockquote");
+  post.className="twitter-tweet";
+
+  const link=document.createElement("a");
+  link.href=safe;
+  link.textContent="View this post on X";
+
+  post.appendChild(link);
+  el=post;
+}else{
   const embed=getYouTubeEmbedUrl(safe);
   if(!embed){
    box.textContent="Valid YouTube video URL daalo.";
    return;
   }
+
   el=document.createElement("iframe");
   el.src=embed;
   el.width="100%";
@@ -574,7 +586,8 @@ function makePopupPreview(){
   el.allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
   el.allowFullscreen=true;
   el.title="YouTube preview";
- }
+}
+
  el.onerror=()=>{
   box.textContent="Preview load nahi ho paya. URL check karo.";
  };
