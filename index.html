@@ -527,13 +527,35 @@ diwali:"#160d08",christmas:"#08130e",holi:"#130b1c"
 };
 document.querySelector('meta[name="theme-color"]').content=colors[theme];
 }
+
+function getAutomaticTheme(){
+ const month=new Date().getMonth();
+
+ if(month===11 || month===0 || month===1){
+  return "winter";
+ }
+
+ if(month>=3 && month<=5){
+  return "summer";
+ }
+
+ return "default";
+}
+
 onSnapshot(doc(db,"siteSettings","theme"),snap=>{
-const data=snap.exists()?snap.data():{};
-applyTheme(data.theme||"default");
+ const data=snap.exists()?snap.data():{};
+ const theme=data.theme||"default";
+
+ if(theme==="auto" || data.mode==="auto"){
+  applyTheme(getAutomaticTheme());
+ }else{
+  applyTheme(theme);
+ }
 },error=>{
-console.error("Theme loading error:",error);
-applyTheme("default");
+ console.error("Theme loading error:",error);
+ applyTheme("default");
 });
+
 
 /* POPUP MANAGER */
 const popup=document.getElementById("sitePopup");
