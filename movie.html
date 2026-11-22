@@ -220,15 +220,35 @@ function showMovie(movie){
     watch || "https://www.justwatch.com/in/search?q=" +
     encodeURIComponent(movie.title);
 
-  const download = safeUrl(movie.downloadLink || movie.download);
-  const downloadButton = document.getElementById("download");
+  const downloadLinks=document.getElementById("downloadLinks");
+downloadLinks.replaceChildren();
 
-  if(download){
-    downloadButton.href = download;
-    downloadButton.style.display = "inline-block";
-  }else{
-    downloadButton.style.display = "none";
-  }
+const qualities=[
+["download720","720p HD"],
+["download1080","1080p Full HD"],
+["download2k","2K Ultra HD"]
+];
+
+qualities.forEach(([field,label])=>{
+const url=safeUrl(movie[field]);
+if(url){
+const row=document.createElement("div");
+row.className="download-row";
+
+const name=document.createElement("span");
+name.textContent=label;
+
+const btn=document.createElement("a");
+btn.className="btn";
+btn.href=url;
+btn.target="_blank";
+btn.rel="noopener";
+btn.textContent="Download ↗";
+
+row.append(name,btn);
+downloadLinks.append(row);
+}
+});
 
   const gallery = document.getElementById("gallery");
   gallery.replaceChildren();
