@@ -755,6 +755,9 @@ preview.onerror=()=>{
 const urlText=document.createElement("p");
 urlText.textContent="Image URL: "+(data.imageUrl||"Missing");
 urlText.style.wordBreak="break-all";
+     const downloadText=document.createElement("p");
+downloadText.textContent="Download URL: "+(data.downloadUrl||"Missing");
+downloadText.style.wordBreak="break-all";
 
 const link=document.createElement("a");
 link.href=data.imageUrl;
@@ -778,7 +781,7 @@ del.addEventListener("click",async()=>{
   }
 });
 
-item.append(title,preview,status,urlText,link,del);
+item.append(title,preview,status,urlText,downloadText,link,del);
       item.append(title,link,del);
       list.appendChild(item);
     });
