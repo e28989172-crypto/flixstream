@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="NUVIFLICKHUB age confirmation page.">
+<title>18+ Age Confirmation | NUVIFLICKHUB</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+background:#080b12;
+color:white;
+font-family:Arial,sans-serif;
+}
+.card{
+width:100%;
+max-width:390px;
+padding:30px 24px;
+text-align:center;
+background:#101522;
+border:1px solid #283546;
+border-radius:16px;
+box-shadow:0 15px 45px #0008;
+}
+.logo{
+font-size:25px;
+font-weight:900;
+color:#3b82f6;
+}
+.logo span{color:white}
+.badge{
+display:inline-block;
+margin:22px 0 10px;
+padding:7px 14px;
+border-radius:20px;
+background:#3b82f622;
+color:#60a5fa;
+font-weight:bold;
+font-size:13px;
+}
+h1{font-size:25px;margin:8px 0 12px}
+p{color:#aebaca;font-size:14px;line-height:1.6}
+button{
+width:100%;
+padding:14px;
+margin-top:13px;
+border:0;
+border-radius:9px;
+font-size:14px;
+font-weight:bold;
+cursor:pointer;
+}
+.enter{background:#3b82f6;color:white}
+.home{background:#273444;color:white}
+button:disabled{opacity:.7;cursor:wait}
+#timer{color:#60a5fa;font-weight:bold;margin-top:15px}
+</style>
+</head>
+
+<body>
+<div class="card">
+<div class="logo">NUVI<span>FLICKHUB</span></div>
+
+<div class="badge">18+ AGE RESTRICTED</div>
+
+<h1>Are you 18 or older?</h1>
+<p>Please confirm your age to continue to the 18+ section.</p>
+
+<button class="enter" id="enterBtn" onclick="enter18()">
+I AM 18+ — ENTER
+</button>
+
+<button class="home" onclick="location.href='index.html'">
+I AM UNDER 18 — GO TO HOME
+</button>
+
+<div id="timer"></div>
+</div>
+
+<script>
+let started=false;
+
+function enter18(){
+if(started)return;
+started=true;
+
+const btn=document.getElementById("enterBtn");
+const timer=document.getElementById("timer");
+btn.disabled=true;
+
+let count=3;
+timer.textContent="Opening in "+count+"...";
+
+const interval=setInterval(()=>{
+count--;
+
+if(count>0){
+timer.textContent="Opening in "+count+"...";
+}else{
+clearInterval(interval);
+location.href="adult.html";
+}
+},1000);
+}
+</script>
+</body>
+</html>
