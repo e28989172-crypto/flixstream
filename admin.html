@@ -381,7 +381,8 @@ download2k:validUrl($("download2k").value.trim()),
    ...movieData,
    createdAt:existing.exists()
     ?(existing.data().createdAt||serverTimestamp())
-    :serverTimestamp()
+    :serverTimestamp(),
+   updatedAt:serverTimestamp()
   });
   message("message",existing.exists()?"Movie updated successfully!":"Movie added successfully!");
   clearForm();
