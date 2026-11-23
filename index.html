@@ -519,7 +519,11 @@ try{
 loadStatus.textContent="Loading movies from Firebase...";
 const snap=await getDocs(collection(db,"movies"));
 allMovies=snap.docs.map(item=>normalizeMovie(item.id,item.data()));
-allMovies.sort((a,b)=>a.title.localeCompare(b.title));
+allMovies.sort((a,b)=>{
+ const ta=a.createdAt?.toMillis?.()||0;
+ const tb=b.createdAt?.toMillis?.()||0;
+ return tb-ta;
+});
 renderMovies();
 loadStatus.textContent=allMovies.length?
 "Movies loaded successfully.":"No movies have been added yet.";
