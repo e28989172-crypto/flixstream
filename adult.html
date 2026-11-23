@@ -61,5 +61,66 @@ a{color:white;text-decoration:none}
 </div>
 
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "YAHAN_ADMIN.HTML WALA SAME API KEY",
+  authDomain: "flixstream-b6d48.firebaseapp.com",
+  projectId: "flixstream-b6d48",
+  storageBucket: "flixstream-b6d48.firebasestorage.app",
+  messagingSenderId: "161127372124",
+  appId: "1:161127372124:web:5c91328cf68bd2b8021d99"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const gallery = document.getElementById("adultGallery");
+const status = document.getElementById("galleryStatus");
+
+async function loadGallery() {
+  try {
+    const snapshot = await getDocs(collection(db, "adultPhotos"));
+    gallery.replaceChildren();
+
+    if (snapshot.empty) {
+      status.textContent = "Abhi koi photo available nahi hai.";
+      gallery.appendChild(status);
+      return;
+    }
+
+    snapshot.forEach(photoDoc => {
+      const data = photoDoc.data();
+
+      const link = document.createElement("a");
+      link.href = "adult-view.html?photo=" + encodeURIComponent(photoDoc.id);
+      link.className = "movie-card";
+
+      const img = document.createElement("img");
+      img.src = data.imageUrl;
+      img.alt = data.title || "18+ Photo";
+      img.loading = "lazy";
+
+      const title = document.createElement("h3");
+      title.textContent = data.title || "View Photo";
+
+      link.append(img, title);
+      gallery.appendChild(link);
+    });
+  } catch (error) {
+    status.textContent = "Gallery load error: " + error.message;
+    gallery.appendChild(status);
+  }
+}
+
+loadGallery();
+</script>
+
 </body>
 </html>
