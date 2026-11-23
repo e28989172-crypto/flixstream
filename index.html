@@ -379,7 +379,8 @@ rating:clean(data.rating),
 poster:safeUrl(data.poster||data.posterUrl),
 trailer:safeUrl(data.trailer||data.trailerUrl),
 watch:safeUrl(data.watch||data.watchUrl||data.watchLink),
-story:clean(data.story)
+story:clean(data.story),
+createdAt:data.createdAt||null
 };
 }
 
