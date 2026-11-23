@@ -58,25 +58,24 @@ text-decoration:none;
 
 <body>
 
+
 <header>NUVIFLICKHUB 18+</header>
 
 <div class="photo">
-<img src="https://t3.pixhost.to/show/7401/814096706_1299.jpg"
-alt="NUVIFLICKHUB Photo">
+  <img src="" alt="NUVIFLICKHUB Photo">
 </div>
 
 <button class="btn" id="downloadBtn" type="button">
-DOWNLOAD PHOTO
+  DOWNLOAD PHOTO
 </button>
 
 <div id="timer" style="color:#60a5fa;margin-top:15px;font-weight:bold"></div>
 
 <a class="back" href="adult.html">← Back to Gallery</a>
-<script>
-let downloading = false;
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+
 import {
   getFirestore,
   doc,
@@ -84,7 +83,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey:"AIzaSyA6Boo_uo8Ttw9GXd0GB16f6VTucF0s904",
+  apiKey: "YAHAN_ADMIN.HTML_WALI_API_KEY_PASTE_KARO",
   authDomain: "flixstream-b6d48.firebaseapp.com",
   projectId: "flixstream-b6d48",
   storageBucket: "flixstream-b6d48.firebasestorage.app",
@@ -107,18 +106,39 @@ async function loadPhoto() {
   try {
     const photoId = new URLSearchParams(location.search).get("photo");
 
-    if (!photoId) throw new Error("Photo ID nahi mila.");
+    if (!photoId) {
+      throw new Error("Photo ID nahi mila.");
+    }
 
     const snap = await getDoc(doc(db, "adultPhotos", photoId));
 
-    if (!snap.exists()) throw new Error("Photo nahi mili.");
+    if (!snap.exists()) {
+      throw new Error("Photo nahi mili.");
+    }
 
     const data = snap.data();
 
+    if (!data.imageUrl) {
+      throw new Error("Image URL nahi mila.");
+    }
+
     photo.src = data.imageUrl;
     photo.alt = data.title || "NUVIFLICKHUB Photo";
-    title.textContent = "NUVIFLICKHUB 18+ | " + (data.title || "Photo View");
+
+    title.textContent =
+      "NUVIFLICKHUB 18+ | " + (data.title || "Photo View");
+
     downloadUrl = data.downloadUrl || data.imageUrl;
+
+    photo.onerror = () => {
+      timer.textContent = "Photo load nahi hui. Image link check karein.";
+    };
+
+    photo.onload = () => {
+      timer.textContent = "";
+    };
+
+    btn.disabled = false;
 
   } catch (error) {
     timer.textContent = "Photo load error: " + error.message;
@@ -133,23 +153,28 @@ btn.addEventListener("click", () => {
   btn.disabled = true;
 
   let count = 6;
-  timer.textContent = "Download starting in " + count + " seconds...";
+
+  timer.textContent =
+    "Download starting in " + count + " seconds...";
 
   const interval = setInterval(() => {
     count--;
 
     if (count > 0) {
-      timer.textContent = "Download starting in " + count + " seconds...";
+      timer.textContent =
+        "Download starting in " + count + " seconds...";
     } else {
       clearInterval(interval);
       timer.textContent = "Opening photo...";
+
       window.location.href = downloadUrl;
     }
   }, 1000);
 });
 
+btn.disabled = true;
 loadPhoto();
 </script>
-  
+
 </body>
 </html>
