@@ -252,12 +252,12 @@ function showMovie(movie){
 downloadLinks.replaceChildren();
 
 const qualities=[
-["download720","720p HD"],
-["download1080","1080p Full HD"],
-["download2k","2K Ultra HD"]
+["download720","720p HD","720"],
+["download1080","1080p Full HD","1080"],
+["download2k","2K Ultra HD","2k"]
 ];
 
-qualities.forEach(([field,label])=>{
+qualities.forEach(([field,label,quality])=>{
 const url=safeUrl(movie[field]);
 if(url){
 const row=document.createElement("div");
@@ -268,10 +268,10 @@ name.textContent=label;
 
 const btn=document.createElement("a");
 btn.className="btn";
-btn.href=url;
+btn.href="https://t.me/NuviFlickHubBot?start=d_"+key+"_"+quality;
 btn.target="_blank";
 btn.rel="noopener";
-btn.textContent="Download ↗";
+btn.textContent="Get Download Link ↗";
 
 row.append(name,btn);
 downloadLinks.append(row);
