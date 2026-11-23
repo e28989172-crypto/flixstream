@@ -327,8 +327,13 @@ onAuthStateChanged(auth,async user=>{
  if(dashboardLoading)return;
  dashboardLoading=true;
  try{
-  await Promise.all([loadMovies(),loadThemeSettings(),loadPopupSettings()]);
-  message("message","Admin Dashboard connected successfully.");
+  await Promise.all([
+  loadMovies(),
+  loadThemeSettings(),
+  loadPopupSettings(),
+  loadAdultPhotos()
+]);
+message("message","Admin Dashboard connected successfully.");
  }catch(error){
   message("message","Dashboard load error: "+error.message,"error");
  }finally{dashboardLoading=false;}
