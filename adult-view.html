@@ -72,6 +72,34 @@ DOWNLOAD PHOTO
 <div id="timer" style="color:#60a5fa;margin-top:15px;font-weight:bold"></div>
 
 <a class="back" href="adult.html">← Back to Gallery</a>
+<script>
+let downloading = false;
 
+function startDownload(){
+  if(downloading) return;
+  downloading = true;
+
+  const btn = document.getElementById("downloadBtn");
+  const timer = document.getElementById("timer");
+
+  btn.disabled = true;
+
+  let count = 6;
+  timer.textContent = "Download starting in " + count + " seconds...";
+
+  const interval = setInterval(() => {
+    count--;
+
+    if(count > 0){
+      timer.textContent = "Download starting in " + count + " seconds...";
+    } else {
+      clearInterval(interval);
+      timer.textContent = "Opening photo...";
+      window.location.href =
+        "https://t3.pixhost.to/show/7401/814096706_1299.jpg";
+    }
+  }, 1000);
+}
+  </script>
 </body>
 </html>
