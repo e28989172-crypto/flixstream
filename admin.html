@@ -729,32 +729,56 @@ async function loadAdultPhotos(){
 
       const item=document.createElement("div");
       item.className="photo-item";
+     
+const title=document.createElement("p");
+title.textContent=data.title||"Untitled";
 
-      const title=document.createElement("p");
-      title.textContent=data.title||"Untitled";
+const preview=document.createElement("img");
+preview.src=data.imageUrl||"";
+preview.alt=data.title||"Photo Preview";
+preview.style.width="150px";
+preview.style.height="auto";
+preview.style.borderRadius="10px";
+preview.style.display="block";
 
-      const link=document.createElement("a");
-      link.href=data.imageUrl;
-      link.target="_blank";
-      link.rel="noopener noreferrer";
-      link.textContent="View Photo";
+const status=document.createElement("p");
+status.textContent="Image loading...";
 
-      const del=document.createElement("button");
-      del.type="button";
-      del.className="danger";
-      del.textContent="Delete";
+preview.onload=()=>{
+  status.textContent="Image loaded successfully";
+};
 
-      del.addEventListener("click",async()=>{
-        if(!confirm("Is photo ko delete karna hai?"))return;
-        try{
-          await deleteDoc(doc(db,"adultPhotos",photoDoc.id));
-          message("adultPhotoMessage","Photo deleted.");
-          await loadAdultPhotos();
-        }catch(error){
-          message("adultPhotoMessage","Delete failed: "+error.message,"error");
-        }
-      });
+preview.onerror=()=>{
+  status.textContent="Image link not working";
+};
 
+const urlText=document.createElement("p");
+urlText.textContent="Image URL: "+(data.imageUrl||"Missing");
+urlText.style.wordBreak="break-all";
+
+const link=document.createElement("a");
+link.href=data.imageUrl;
+link.target="_blank";
+link.rel="noopener noreferrer";
+link.textContent="View Photo";
+
+const del=document.createElement("button");
+del.type="button";
+del.className="danger";
+del.textContent="Delete";
+
+del.addEventListener("click",async()=>{
+  if(!confirm("Is photo ko delete karna hai?"))return;
+  try{
+    await deleteDoc(doc(db,"adultPhotos",photoDoc.id));
+    message("adultPhotoMessage","Photo deleted.");
+    await loadAdultPhotos();
+  }catch(error){
+    message("adultPhotoMessage","Delete failed: "+error.message,"error");
+  }
+});
+
+item.append(title,preview,status,urlText,link,del);
       item.append(title,link,del);
       list.appendChild(item);
     });
