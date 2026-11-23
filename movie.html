@@ -332,9 +332,11 @@ async function loadMovie(){
         screenshots:data.screenshots || [],
         trailer:data.trailer || data.trailerUrl || "",
         watch:data.watch || data.watchUrl || "",
-        downloadLink:data.downloadLink || ""
-      };
-
+downloadLink:data.downloadLink || "",
+download720:data.download720 || "",
+download1080:data.download1080 || "",
+download2k:data.download2k || ""
+  };
       showMovie(movie);
       text("status","");
     }else if(movies[key]){
