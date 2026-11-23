@@ -401,11 +401,11 @@ async function loadMovies(){
   const snap=await getDocs(collection(db,"movies"));
   allMovies=snap.docs.map(d=>({id:d.id,...d.data()}));
   allMovies.sort((a,b)=>{
-   const ta=a.createdAt?.toMillis?.()||0;
-   const tb=b.createdAt?.toMillis?.()||0;
-   return tb-ta;
-  });
-  renderMovies();
+ const ta=a.createdAt?.toMillis?.()||0;
+ const tb=b.createdAt?.toMillis?.()||0;
+ return tb-ta;
+});
+renderMovies();
  }catch(error){
   list.textContent="Movies load error: "+error.message;
   throw error;
