@@ -75,13 +75,61 @@ DOWNLOAD PHOTO
 <script>
 let downloading = false;
 
-function startDownload(){
-  if(downloading) return;
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "YAHAN ADMIN.HTML WALA SAME API KEY",
+  authDomain: "flixstream-b6d48.firebaseapp.com",
+  projectId: "flixstream-b6d48",
+  storageBucket: "flixstream-b6d48.firebasestorage.app",
+  messagingSenderId: "161127372124",
+  appId: "1:161127372124:web:5c91328cf68bd2b8021d99"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const photo = document.querySelector(".photo img");
+const title = document.querySelector("header");
+const btn = document.getElementById("downloadBtn");
+const timer = document.getElementById("timer");
+
+let downloadUrl = "";
+let downloading = false;
+
+async function loadPhoto() {
+  try {
+    const photoId = new URLSearchParams(location.search).get("photo");
+
+    if (!photoId) throw new Error("Photo ID nahi mila.");
+
+    const snap = await getDoc(doc(db, "adultPhotos", photoId));
+
+    if (!snap.exists()) throw new Error("Photo nahi mili.");
+
+    const data = snap.data();
+
+    photo.src = data.imageUrl;
+    photo.alt = data.title || "NUVIFLICKHUB Photo";
+    title.textContent = "NUVIFLICKHUB 18+ | " + (data.title || "Photo View");
+    downloadUrl = data.downloadUrl || data.imageUrl;
+
+  } catch (error) {
+    timer.textContent = "Photo load error: " + error.message;
+    btn.disabled = true;
+  }
+}
+
+btn.addEventListener("click", () => {
+  if (downloading || !downloadUrl) return;
+
   downloading = true;
-
-  const btn = document.getElementById("downloadBtn");
-  const timer = document.getElementById("timer");
-
   btn.disabled = true;
 
   let count = 6;
@@ -90,16 +138,18 @@ function startDownload(){
   const interval = setInterval(() => {
     count--;
 
-    if(count > 0){
+    if (count > 0) {
       timer.textContent = "Download starting in " + count + " seconds...";
     } else {
       clearInterval(interval);
       timer.textContent = "Opening photo...";
-      window.location.href =
-        "https://t3.pixhost.to/show/7401/814096706_1299.jpg";
+      window.location.href = downloadUrl;
     }
   }, 1000);
-}
-  </script>
+});
+
+loadPhoto();
+</script>
+  
 </body>
 </html>
