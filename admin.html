@@ -704,6 +704,99 @@ $("disablePopupBtn").addEventListener("click",async()=>{
  }
 });
 
+/* 18+ PHOTO MANAGER */
+
+async function loadAdultPhotos(){
+  const list=$("adultPhotoList");
+  list.textContent="Loading photos...";
+
+  try{
+    const snap=await getDocs(collection(db,"adultPhotos"));
+    list.replaceChildren();
+
+    if(snap.empty){
+      list.textContent="Abhi koi photo add nahi hai.";
+      return;
+    }
+
+    snap.forEach(photoDoc=>{
+      const data=photoDoc.data();
+
+      const item=document.createElement("div");
+      item.className="photo-item";
+
+      const title=document.createElement("p");
+      title.textContent=data.title||"Untitled";
+
+      const link=document.createElement("a");
+      link.href=data.imageUrl;
+      link.target="_blank";
+      link.rel="noopener noreferrer";
+      link.textContent="View Photo";
+
+      const del=document.createElement("button");
+      del.type="button";
+      del.className="danger";
+      del.textContent="Delete";
+
+      del.addEventListener("click",async()=>{
+        if(!confirm("Is photo ko delete karna hai?"))return;
+        try{
+          await deleteDoc(doc(db,"adultPhotos",photoDoc.id));
+          message("adultPhotoMessage","Photo deleted.");
+          await loadAdultPhotos();
+        }catch(error){
+          message("adultPhotoMessage","Delete failed: "+error.message,"error");
+        }
+      });
+
+      item.append(title,link,del);
+      list.appendChild(item);
+    });
+  }catch(error){
+    list.textContent="Photos load nahi hue.";
+    message("adultPhotoMessage","Load error: "+error.message,"error");
+  }
+}
+
+$("addAdultPhotoBtn").addEventListener("click",async()=>{
+  try{
+    const title=$("adultPhotoTitle").value.trim();
+    const imageUrl=validUrl($("adultPhotoImage").value.trim());
+    const downloadUrl=validUrl($("adultPhotoDownload").value.trim());
+
+    if(!title)throw new Error("Photo title daalo.");
+    if(!imageUrl)throw new Error("Valid image URL daalo.");
+    if(!downloadUrl)throw new Error("Valid download URL daalo.");
+
+    const btn=$("addAdultPhotoBtn");
+    btn.disabled=true;
+
+    try{
+      const id="photo_"+Date.now();
+      await setDoc(doc(db,"adultPhotos",id),{
+        title,
+        imageUrl,
+        downloadUrl,
+        createdAt:serverTimestamp(),
+        updatedAt:serverTimestamp()
+      });
+
+      $("adultPhotoTitle").value="";
+      $("adultPhotoImage").value="";
+      $("adultPhotoDownload").value="";
+
+      message("adultPhotoMessage","Photo added successfully.");
+      await loadAdultPhotos();
+    }finally{
+      btn.disabled=false;
+    }
+  }catch(error){
+    message("adultPhotoMessage","Add failed: "+error.message,"error");
+    $("addAdultPhotoBtn").disabled=false;
+  }
+});
+ 
 /* INITIAL STATUS */
 
 message("loginMessage","Firebase connection starting...");
