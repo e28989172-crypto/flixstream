@@ -339,18 +339,49 @@ function updateMovieSEO(movie){
     `${title} movie details, release year, cast, rating and available viewing information on NUVIFLICKHUB.`
   ).replace(/\s+/g," ").slice(0,155);
 
+  const poster = movie.poster || "";
+
   document.title = `${title} - Movie Details | NUVIFLICKHUB`;
 
-  let meta = document.querySelector('meta[name="description"]');
+  function setMeta(name, content, property = false){
+    const selector = property
+      ? `meta[property="${name}"]`
+      : `meta[name="${name}"]`;
 
-  if(!meta){
-    meta = document.createElement("meta");
-    meta.name = "description";
-    document.head.appendChild(meta);
+    let tag = document.querySelector(selector);
+
+    if(!tag){
+      tag = document.createElement("meta");
+      if(property){
+        tag.setAttribute("property",name);
+      }else{
+        tag.setAttribute("name",name);
+      }
+      document.head.appendChild(tag);
+    }
+
+    tag.setAttribute("content",content);
   }
 
-  meta.content = description;
+  setMeta("description",description);
+  setMeta("og:title",`${title} | NUVIFLICKHUB`,true);
+  setMeta("og:description",description,true);
+  setMeta("og:type","video.movie",true);
+  setMeta("og:site_name","NUVIFLICKHUB",true);
+
+  if(poster){
+    setMeta("og:image",poster,true);
   }
+
+  setMeta("twitter:card",poster ? "summary_large_image" : "summary");
+  setMeta("twitter:title",`${title} | NUVIFLICKHUB`);
+  setMeta("twitter:description",description);
+
+  if(poster){
+    setMeta("twitter:image",poster);
+  }
+}
+
       
 async function loadMovie(){
   try{
