@@ -228,8 +228,11 @@ border:0;
   /* X VIDEO POPUP FIX */
 #popupMediaHolder{
 width:100%;
+aspect-ratio:16/9;
 max-width:100%;
 overflow:hidden;
+border-radius:8px;
+background:#05090d;
 }
 
 #popupMediaHolder .twitter-tweet{
@@ -240,14 +243,10 @@ margin:0 !important;
 }
 
 #popupMediaHolder iframe{
+width:100% !important;
+height:100% !important;
 max-width:100% !important;
-}
-.popup-controls{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:8px;
-margin-top:7px;
+border:0;
 }
 .popup-controls button{
 border:0;
