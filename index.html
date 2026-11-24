@@ -718,23 +718,26 @@ if(destination){
 visitLink.href=destination;
 visitLink.classList.add("show");
 }
-  let popupTimer;
-let popupCountdown = 10;
-
-function startPopupCountdown(){
+ function startPopupCountdown(){
   clearInterval(popupTimer);
-  popupCountdown = 10;
-  hint.textContent = "Opening in 10 seconds...";
+
+  popupCountdown = 3;
+  hint.textContent = "Opening in 3 seconds...";
 
   popupTimer = setInterval(()=>{
     popupCountdown--;
 
     if(popupCountdown <= 0){
       clearInterval(popupTimer);
-      if(destination) window.open(destination,"_blank");
+
+      if(destination){
+        window.location.href = destination;
+      }
+
       hint.textContent = "Opening...";
     }else{
-      hint.textContent = "Opening in " + popupCountdown + " seconds...";
+      hint.textContent =
+        "Opening in " + popupCountdown + " seconds...";
     }
   },1000);
 }
