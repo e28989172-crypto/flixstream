@@ -387,6 +387,32 @@ function updateMovieSEO(movie){
   if(poster){
     setMeta("twitter:image",poster);
   }
+      const schema = {
+    "@context": "https://schema.org",
+    "@type": "Movie",
+    "name": title,
+    "description": description,
+    "image": poster || undefined,
+    "genre": movie.genre || undefined,
+    "director": movie.director
+      ? {
+          "@type": "Person",
+          "name": movie.director
+        }
+      : undefined
+  };
+
+  let schemaTag = document.getElementById("movieSchema");
+
+  if(!schemaTag){
+    schemaTag = document.createElement("script");
+    schemaTag.type = "application/ld+json";
+    schemaTag.id = "movieSchema";
+    document.head.appendChild(schemaTag);
+  }
+
+  schemaTag.textContent = JSON.stringify(schema);
+  }
 }
 
       
