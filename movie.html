@@ -410,11 +410,9 @@ function updateMovieSEO(movie){
     schemaTag.id = "movieSchema";
     document.head.appendChild(schemaTag);
   }
-
+  
   schemaTag.textContent = JSON.stringify(schema);
   }
-}
-
       
 async function loadMovie(){
   try{
