@@ -331,6 +331,27 @@ downloadLinks.append(row);
   });
 }
 
+function updateMovieSEO(movie){
+  const title = movie.title || "Movie";
+
+  const description = (
+    movie.story ||
+    `${title} movie details, release year, cast, rating and available viewing information on NUVIFLICKHUB.`
+  ).replace(/\s+/g," ").slice(0,155);
+
+  document.title = `${title} - Movie Details | NUVIFLICKHUB`;
+
+  let meta = document.querySelector('meta[name="description"]');
+
+  if(!meta){
+    meta = document.createElement("meta");
+    meta.name = "description";
+    document.head.appendChild(meta);
+  }
+
+  meta.content = description;
+  }
+      
 async function loadMovie(){
   try{
     const movieRef = doc(db,"movies",key);
@@ -356,28 +377,32 @@ download720:data.download720 || "",
 download1080:data.download1080 || "",
 download2k:data.download2k || ""
   };
-      showMovie(movie);
-      text("status","");
-    }else if(movies[key]){
-      showMovie(movies[key]);
-      text("status","");
-    }else{
-      text("title","Movie Not Found");
-      text("status","This movie is not available. Please return to the homepage.");
-    }
-  }catch(error){
-    console.error("Firebase movie error:",error);
+      
+showMovie(movie);
+updateMovieSEO(movie);
+text("status","");
+}else if(movies[key]){
+  showMovie(movies[key]);
+  updateMovieSEO(movies[key]);
+  text("status","");
+}else{
+  text("title","Movie Not Found");
+  text("status","This movie is not available. Please return to the homepage.");
+}
+}catch(error){
+  console.error("Firebase movie error:",error);
 
-    if(movies[key]){
-      showMovie(movies[key]);
-      text("status","Showing saved movie information. Online details could not be loaded.");
-    }else{
-      text("title","Unable to Load Movie");
-      text("status","Please check your internet connection and try again.");
-    }
+  if(movies[key]){
+    showMovie(movies[key]);
+    updateMovieSEO(movies[key]);
+    text("status","Showing saved movie information. Online details could not be loaded.");
+  }else{
+    text("title","Unable to Load Movie");
+    text("status","Please check your internet connection and try again.");
   }
 }
-
+}
+  
 loadMovie();
 </script>
 </body>
