@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://e28989172-crypto.github.io/flixstream/sitemap.xml
