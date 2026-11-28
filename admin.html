@@ -167,31 +167,37 @@ hr{border:0;border-top:1px solid #293d42;margin:20px 0}
  </section>
  
 <label>Photo Title</label>
-<input id="adultPhotoTitle" type="text" placeholder="Photo title">
 
-<label>Photo Image URL</label>
-<input id="adultPhotoImage" type="url" placeholder="https://...">
+<section class="panel">
+  <h2>18+ Photo Manager</h2>
+  <p class="note">Sirf legal aur non-explicit photos ke authorized links add karein.</p>
 
-<label>Download URL</label>
-<input id="adultPhotoDownload" type="url" placeholder="https://...">
+  <label>Photo Title</label>
+  <input id="adultPhotoTitle" type="text" placeholder="Photo title">
 
-<label>Download Password</label>
-<input id="adultPhotoPassword" type="text" placeholder="Enter password for this photo">
+  <label>Photo Image URL</label>
+  <input id="adultPhotoImage" type="url" placeholder="https://...">
 
-<p class="note">Har photo ke liye alag password daalein.</p>
+  <label>Download URL</label>
+  <input id="adultPhotoDownload" type="url" placeholder="https://...">
 
-<button id="addAdultPhotoBtn" type="button">Add Photo</button>
+  <label>Download Password</label>
+  <input id="adultPhotoPassword" type="text" placeholder="Enter password for this photo">
 
-<button id="cancelAdultPhotoEditBtn" type="button" class="secondary hidden">
-  Cancel Edit
-</button>
+  <p class="note">Har photo ke liye alag password daalein.</p>
 
-<div id="adultPhotoMessage" aria-live="polite"></div>
+  <button id="addAdultPhotoBtn" type="button">Add Photo</button>
 
-<h3>All 18+ Photos</h3>
-<div id="adultPhotoList">Loading photos...</div>
+  <button id="cancelAdultPhotoEditBtn" type="button" class="secondary hidden">
+    Cancel Edit
+  </button>
 
+  <div id="adultPhotoMessage" aria-live="polite"></div>
+
+  <h3>All 18+ Photos</h3>
+  <div id="adultPhotoList">Loading photos...</div>
 </section>
+
 </div>
 
 <script>
