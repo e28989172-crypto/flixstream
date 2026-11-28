@@ -973,6 +973,162 @@ async function loadAdultPhotos(){
 
   }catch(error){
 
+
+/* 18+ PHOTO MANAGER */
+
+let editingAdultPhotoId = null;
+
+function clearAdultPhotoForm(){
+  editingAdultPhotoId = null;
+
+  $("adultPhotoTitle").value = "";
+  $("adultPhotoImage").value = "";
+  $("adultPhotoDownload").value = "";
+  $("adultPhotoPassword").value = "";
+
+  $("addAdultPhotoBtn").textContent = "Add Photo";
+  $("cancelAdultPhotoEditBtn").classList.add("hidden");
+}
+
+$("cancelAdultPhotoEditBtn").addEventListener("click",()=>{
+  clearAdultPhotoForm();
+  clearMessage("adultPhotoMessage");
+});
+
+
+async function loadAdultPhotos(){
+
+  const list = $("adultPhotoList");
+  list.textContent = "Loading photos...";
+
+  try{
+
+    const snap = await getDocs(collection(db,"adultPhotos"));
+
+    list.replaceChildren();
+
+    if(snap.empty){
+      list.textContent = "Abhi koi photo add nahi hai.";
+      return;
+    }
+
+    snap.forEach(photoDoc=>{
+
+      const data = photoDoc.data();
+
+      const item = document.createElement("div");
+      item.className = "photo-item";
+
+      const title = document.createElement("p");
+      title.textContent = data.title || "Untitled";
+
+      const preview = document.createElement("img");
+      preview.src = data.imageUrl || "";
+      preview.alt = data.title || "Photo Preview";
+      preview.style.width = "150px";
+      preview.style.height = "auto";
+      preview.style.borderRadius = "10px";
+      preview.style.display = "block";
+
+      const status = document.createElement("p");
+      status.textContent = "Image loading...";
+
+      preview.onload = ()=>{
+        status.textContent = "Image loaded successfully";
+      };
+
+      preview.onerror = ()=>{
+        status.textContent = "Image link not working";
+      };
+
+      const urlText = document.createElement("p");
+      urlText.textContent = "Image URL: " + (data.imageUrl || "Missing");
+      urlText.style.wordBreak = "break-all";
+
+      const downloadText = document.createElement("p");
+      downloadText.textContent = "Download URL: " + (data.downloadUrl || "Missing");
+      downloadText.style.wordBreak = "break-all";
+
+      const passwordText = document.createElement("p");
+      passwordText.textContent = data.downloadPassword
+        ? "Download Password: Set"
+        : "Download Password: Not set";
+
+      const link = document.createElement("a");
+      link.href = data.imageUrl || "#";
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "View Photo";
+
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.textContent = "Edit";
+
+      edit.addEventListener("click",()=>{
+
+        editingAdultPhotoId = photoDoc.id;
+
+        $("adultPhotoTitle").value = data.title || "";
+        $("adultPhotoImage").value = data.imageUrl || "";
+        $("adultPhotoDownload").value = data.downloadUrl || "";
+        $("adultPhotoPassword").value = data.downloadPassword || "";
+
+        $("addAdultPhotoBtn").textContent = "Update Photo";
+        $("cancelAdultPhotoEditBtn").classList.remove("hidden");
+
+        $("adultPhotoTitle").scrollIntoView({
+          behavior:"smooth",
+          block:"center"
+        });
+
+        message("adultPhotoMessage","Editing photo: "+(data.title || photoDoc.id));
+      });
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "danger";
+      del.textContent = "Delete";
+
+      del.addEventListener("click",async()=>{
+
+        if(!confirm("Is photo ko delete karna hai?"))return;
+
+        try{
+
+          await deleteDoc(doc(db,"adultPhotos",photoDoc.id));
+
+          if(editingAdultPhotoId === photoDoc.id){
+            clearAdultPhotoForm();
+          }
+
+          message("adultPhotoMessage","Photo deleted.");
+          await loadAdultPhotos();
+
+        }catch(error){
+
+          message("adultPhotoMessage","Delete failed: "+error.message,"error");
+
+        }
+      });
+
+      item.append(
+        title,
+        preview,
+        status,
+        urlText,
+        downloadText,
+        passwordText,
+        link,
+        edit,
+        del
+      );
+
+      list.appendChild(item);
+
+    });
+
+  }catch(error){
+
     list.textContent = "Photos load nahi hue.";
     message("adultPhotoMessage","Load error: "+error.message,"error");
 
@@ -1001,9 +1157,11 @@ $("addAdultPhotoBtn").addEventListener("click",async()=>{
     }
 
     btn.disabled = true;
-    btn.textContent = editingAdultPhotoId ? "Updating..." : "Adding...";
 
     const isEditing = !!editingAdultPhotoId;
+
+    btn.textContent = isEditing ? "Updating..." : "Adding...";
+
     const id = editingAdultPhotoId || ("photo_"+Date.now());
 
     const photoData = {
