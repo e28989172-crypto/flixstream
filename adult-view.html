@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +7,7 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
 margin:0;
 padding:20px;
@@ -16,6 +16,7 @@ color:white;
 font-family:Arial,sans-serif;
 text-align:center;
 }
+
 header{
 background:#101522;
 padding:18px;
@@ -24,6 +25,7 @@ color:#3b82f6;
 font-size:24px;
 font-weight:bold;
 }
+
 .photo{
 max-width:420px;
 margin:25px auto;
@@ -32,21 +34,48 @@ background:#101522;
 border:1px solid #283546;
 border-radius:12px;
 }
+
 .photo img{
 width:100%;
 height:auto;
 display:block;
 border-radius:8px;
 }
+
 .btn{
-display:inline-block;
+display:block;
+width:100%;
+max-width:260px;
+margin:12px auto;
 padding:13px 25px;
 background:#3b82f6;
 color:white;
 text-decoration:none;
 font-weight:bold;
+border:0;
 border-radius:8px;
+cursor:pointer;
 }
+
+.copy-btn{
+background:#101522;
+border:1px solid #3b82f6;
+color:#60a5fa;
+}
+
+.btn:disabled{
+opacity:.5;
+cursor:not-allowed;
+}
+
+.status{
+color:#60a5fa;
+margin-top:10px;
+font-size:13px;
+font-weight:bold;
+min-height:18px;
+}
+
 .back{
 display:block;
 margin-top:20px;
@@ -58,22 +87,28 @@ text-decoration:none;
 
 <body>
 
-
 <header>NUVIFLICKHUB 18+</header>
 
 <div class="photo">
   <img src="" alt="NUVIFLICKHUB Photo">
 </div>
 
-<button class="btn" id="downloadBtn" type="button">
+<button class="btn" id="downloadBtn" type="button" disabled>
   DOWNLOAD NOW
 </button>
 
-<div id="timer" style="color:#60a5fa;margin-top:15px;font-weight:bold"></div>
+<div class="status" id="downloadTimer"></div>
+
+<button class="btn copy-btn" id="copyPasswordBtn" type="button" disabled>
+  COPY PASSWORD
+</button>
+
+<div class="status" id="copyTimer"></div>
 
 <a class="back" href="adult.html">← Back to Gallery</a>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
 import {
@@ -84,11 +119,11 @@ import {
 
 const firebaseConfig = {
   apiKey:"AIzaSyA6Boo_uo8Ttw9GXd0GB16f6VTucF0s904",
-  authDomain: "flixstream-b6d48.firebaseapp.com",
-  projectId: "flixstream-b6d48",
-  storageBucket: "flixstream-b6d48.firebasestorage.app",
-  messagingSenderId: "161127372124",
-  appId: "1:161127372124:web:5c91328cf68bd2b8021d99"
+  authDomain:"flixstream-b6d48.firebaseapp.com",
+  projectId:"flixstream-b6d48",
+  storageBucket:"flixstream-b6d48.firebasestorage.app",
+  messagingSenderId:"161127372124",
+  appId:"1:161127372124:web:5c91328cf68bd2b8021d99"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -96,29 +131,41 @@ const db = getFirestore(app);
 
 const photo = document.querySelector(".photo img");
 const title = document.querySelector("header");
-const btn = document.getElementById("downloadBtn");
-const timer = document.getElementById("timer");
+
+const downloadBtn = document.getElementById("downloadBtn");
+const copyPasswordBtn = document.getElementById("copyPasswordBtn");
+
+const downloadTimer = document.getElementById("downloadTimer");
+const copyTimer = document.getElementById("copyTimer");
 
 let downloadUrl = "";
+let downloadPassword = "";
+
 let downloading = false;
+let copying = false;
 
-async function loadPhoto() {
-  try {
-    const photoId = new URLSearchParams(location.search).get("photo");
+async function loadPhoto(){
 
-    if (!photoId) {
+  try{
+
+    const photoId =
+      new URLSearchParams(location.search).get("photo");
+
+    if(!photoId){
       throw new Error("Photo ID nahi mila.");
     }
 
-    const snap = await getDoc(doc(db, "adultPhotos", photoId));
+    const snap = await getDoc(
+      doc(db,"adultPhotos",photoId)
+    );
 
-    if (!snap.exists()) {
+    if(!snap.exists()){
       throw new Error("Photo nahi mili.");
     }
 
     const data = snap.data();
 
-    if (!data.imageUrl) {
+    if(!data.imageUrl){
       throw new Error("Image URL nahi mila.");
     }
 
@@ -126,54 +173,153 @@ async function loadPhoto() {
     photo.alt = data.title || "NUVIFLICKHUB Photo";
 
     title.textContent =
-      "NUVIFLICKHUB 18+ | " + (data.title || "Photo View");
+      "NUVIFLICKHUB 18+ | " +
+      (data.title || "Photo View");
 
     downloadUrl = data.downloadUrl || data.imageUrl;
 
+    // Each photo has its own password
+    downloadPassword =
+      typeof data.downloadPassword === "string"
+        ? data.downloadPassword
+        : "";
+
+    downloadBtn.disabled = false;
+
+    copyPasswordBtn.disabled =
+      !downloadPassword.trim();
+
+    if(!downloadPassword.trim()){
+      copyTimer.textContent =
+        "Password is not available for this photo.";
+    }
+
     photo.onerror = () => {
-      timer.textContent = "Photo load nahi hui. Image link check karein.";
+      downloadTimer.textContent =
+        "Photo load nahi hui. Image link check karein.";
     };
 
     photo.onload = () => {
-      timer.textContent = "";
+      downloadTimer.textContent = "";
     };
 
-    btn.disabled = false;
+  }catch(error){
 
-  } catch (error) {
-    timer.textContent = "Photo load error: " + error.message;
-    btn.disabled = true;
+    downloadTimer.textContent =
+      "Photo load error: " + error.message;
+
+    downloadBtn.disabled = true;
+    copyPasswordBtn.disabled = true;
+
   }
 }
 
-btn.addEventListener("click", () => {
-  if (downloading || !downloadUrl) return;
+
+// DOWNLOAD TIMER - 6 SECONDS
+
+downloadBtn.addEventListener("click",()=>{
+
+  if(downloading || !downloadUrl) return;
 
   downloading = true;
-  btn.disabled = true;
+  downloadBtn.disabled = true;
 
   let count = 6;
 
-  timer.textContent =
+  downloadTimer.textContent =
     "Download starting in " + count + " seconds...";
 
-  const interval = setInterval(() => {
+  const interval = setInterval(()=>{
+
     count--;
 
-    if (count > 0) {
-      timer.textContent =
+    if(count > 0){
+
+      downloadTimer.textContent =
         "Download starting in " + count + " seconds...";
-    } else {
+
+    }else{
+
       clearInterval(interval);
-      timer.textContent = "Opening photo...";
+
+      downloadTimer.textContent =
+        "Opening photo...";
 
       window.location.href = downloadUrl;
+
     }
-  }, 1000);
+
+  },1000);
+
 });
 
-btn.disabled = true;
+
+// COPY PASSWORD TIMER - 5 SECONDS
+
+copyPasswordBtn.addEventListener("click",()=>{
+
+  if(copying || !downloadPassword.trim()) return;
+
+  copying = true;
+  copyPasswordBtn.disabled = true;
+
+  let count = 5;
+
+  copyTimer.textContent =
+    "Password will be copied in " + count + " seconds...";
+
+  const interval = setInterval(async()=>{
+
+    count--;
+
+    if(count > 0){
+
+      copyTimer.textContent =
+        "Password will be copied in " + count + " seconds...";
+
+    }else{
+
+      clearInterval(interval);
+
+      try{
+
+        if(!navigator.clipboard ||
+           !navigator.clipboard.writeText){
+          throw new Error("Clipboard not supported.");
+        }
+
+        await navigator.clipboard.writeText(
+          downloadPassword
+        );
+
+        copyTimer.textContent =
+          "Password Copied Successfully!";
+
+      }catch(error){
+
+        copyTimer.textContent =
+          "Copy failed. Please allow clipboard permission.";
+
+      }finally{
+
+        copying = false;
+        copyPasswordBtn.disabled =
+          !downloadPassword.trim();
+
+      }
+
+    }
+
+  },1000);
+
+});
+
+
+downloadBtn.disabled = true;
+copyPasswordBtn.disabled = true;
+
 loadPhoto();
+
 </script>
 
 </body>
