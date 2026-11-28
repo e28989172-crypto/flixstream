@@ -166,27 +166,31 @@ hr{border:0;border-top:1px solid #293d42;margin:20px 0}
   <div id="popupMessage" aria-live="polite"></div>
  </section>
  
-<section class="panel">
-  <h2>18+ Photo Manager</h2>
-  <p class="note">Sirf legal aur non-explicit photos ke authorized links add karein.</p>
+<label>Photo Title</label>
+<input id="adultPhotoTitle" type="text" placeholder="Photo title">
 
-  <label>Photo Title</label>
-  <input id="adultPhotoTitle" type="text" placeholder="Photo title">
+<label>Photo Image URL</label>
+<input id="adultPhotoImage" type="url" placeholder="https://...">
 
-  <label>Photo Image URL</label>
-  <input id="adultPhotoImage" type="url" placeholder="https://...">
+<label>Download URL</label>
+<input id="adultPhotoDownload" type="url" placeholder="https://...">
 
-  <label>Download URL</label>
-  <input id="adultPhotoDownload" type="url" placeholder="https://...">
+<label>Download Password</label>
+<input id="adultPhotoPassword" type="text" placeholder="Enter password for this photo">
 
-  <button id="addAdultPhotoBtn" type="button">Add Photo</button>
+<p class="note">Har photo ke liye alag password daalein.</p>
 
-  <div id="adultPhotoMessage" aria-live="polite"></div>
+<button id="addAdultPhotoBtn" type="button">Add Photo</button>
 
-  <h3>All 18+ Photos</h3>
-  <div id="adultPhotoList">Loading photos...</div>
-</section>
- 
+<button id="cancelAdultPhotoEditBtn" type="button" class="secondary hidden">
+  Cancel Edit
+</button>
+
+<div id="adultPhotoMessage" aria-live="polite"></div>
+
+<h3>All 18+ Photos</h3>
+<div id="adultPhotoList">Loading photos...</div>
+
 </section>
 </div>
 
@@ -808,26 +812,236 @@ $("addAdultPhotoBtn").addEventListener("click",async()=>{
       await setDoc(doc(db,"adultPhotos",id),{
         title,
         imageUrl,
-        downloadUrl,
-        createdAt:serverTimestamp(),
-        updatedAt:serverTimestamp()
+
+/* 18+ PHOTO MANAGER */
+
+let editingAdultPhotoId = null;
+
+function clearAdultPhotoForm(){
+  editingAdultPhotoId = null;
+
+  $("adultPhotoTitle").value = "";
+  $("adultPhotoImage").value = "";
+  $("adultPhotoDownload").value = "";
+  $("adultPhotoPassword").value = "";
+
+  $("addAdultPhotoBtn").textContent = "Add Photo";
+  $("cancelAdultPhotoEditBtn").classList.add("hidden");
+}
+
+$("cancelAdultPhotoEditBtn").addEventListener("click",()=>{
+  clearAdultPhotoForm();
+  clearMessage("adultPhotoMessage");
+});
+
+async function loadAdultPhotos(){
+
+  const list = $("adultPhotoList");
+  list.textContent = "Loading photos...";
+
+  try{
+
+    const snap = await getDocs(collection(db,"adultPhotos"));
+
+    list.replaceChildren();
+
+    if(snap.empty){
+      list.textContent = "Abhi koi photo add nahi hai.";
+      return;
+    }
+
+    snap.forEach(photoDoc=>{
+
+      const data = photoDoc.data();
+
+      const item = document.createElement("div");
+      item.className = "photo-item";
+
+      const title = document.createElement("p");
+      title.textContent = data.title || "Untitled";
+
+      const preview = document.createElement("img");
+      preview.src = data.imageUrl || "";
+      preview.alt = data.title || "Photo Preview";
+      preview.style.width = "150px";
+      preview.style.height = "auto";
+      preview.style.borderRadius = "10px";
+      preview.style.display = "block";
+
+      const status = document.createElement("p");
+      status.textContent = "Image loading...";
+
+      preview.onload = ()=>{
+        status.textContent = "Image loaded successfully";
+      };
+
+      preview.onerror = ()=>{
+        status.textContent = "Image link not working";
+      };
+
+      const urlText = document.createElement("p");
+      urlText.textContent = "Image URL: " + (data.imageUrl || "Missing");
+      urlText.style.wordBreak = "break-all";
+
+      const downloadText = document.createElement("p");
+      downloadText.textContent = "Download URL: " + (data.downloadUrl || "Missing");
+      downloadText.style.wordBreak = "break-all";
+
+      const passwordText = document.createElement("p");
+      passwordText.textContent = data.downloadPassword
+        ? "Download Password: Set"
+        : "Download Password: Not set";
+
+      const link = document.createElement("a");
+      link.href = data.imageUrl || "#";
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "View Photo";
+
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.textContent = "Edit";
+
+      edit.addEventListener("click",()=>{
+
+        editingAdultPhotoId = photoDoc.id;
+
+        $("adultPhotoTitle").value = data.title || "";
+        $("adultPhotoImage").value = data.imageUrl || "";
+        $("adultPhotoDownload").value = data.downloadUrl || "";
+        $("adultPhotoPassword").value = data.downloadPassword || "";
+
+        $("addAdultPhotoBtn").textContent = "Update Photo";
+        $("cancelAdultPhotoEditBtn").classList.remove("hidden");
+
+        $("adultPhotoTitle").scrollIntoView({
+          behavior:"smooth",
+          block:"center"
+        });
+
+        message("adultPhotoMessage","Editing photo: "+(data.title || photoDoc.id));
       });
 
-      $("adultPhotoTitle").value="";
-      $("adultPhotoImage").value="";
-      $("adultPhotoDownload").value="";
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "danger";
+      del.textContent = "Delete";
 
-      message("adultPhotoMessage","Photo added successfully.");
-      await loadAdultPhotos();
-    }finally{
-      btn.disabled=false;
-    }
+      del.addEventListener("click",async()=>{
+
+        if(!confirm("Is photo ko delete karna hai?"))return;
+
+        try{
+
+          await deleteDoc(doc(db,"adultPhotos",photoDoc.id));
+
+          if(editingAdultPhotoId === photoDoc.id){
+            clearAdultPhotoForm();
+          }
+
+          message("adultPhotoMessage","Photo deleted.");
+          await loadAdultPhotos();
+
+        }catch(error){
+
+          message("adultPhotoMessage","Delete failed: "+error.message,"error");
+
+        }
+      });
+
+      item.append(
+        title,
+        preview,
+        status,
+        urlText,
+        downloadText,
+        passwordText,
+        link,
+        edit,
+        del
+      );
+
+      list.appendChild(item);
+
+    });
+
   }catch(error){
-    message("adultPhotoMessage","Add failed: "+error.message,"error");
-    $("addAdultPhotoBtn").disabled=false;
+
+    list.textContent = "Photos load nahi hue.";
+    message("adultPhotoMessage","Load error: "+error.message,"error");
+
   }
+}
+
+
+$("addAdultPhotoBtn").addEventListener("click",async()=>{
+
+  const btn = $("addAdultPhotoBtn");
+
+  try{
+
+    const title = $("adultPhotoTitle").value.trim();
+    const imageUrl = validUrl($("adultPhotoImage").value.trim());
+    const downloadUrl = validUrl($("adultPhotoDownload").value.trim());
+    const downloadPassword = $("adultPhotoPassword").value.trim();
+
+    if(!title)throw new Error("Photo title daalo.");
+    if(!imageUrl)throw new Error("Valid image URL daalo.");
+    if(!downloadUrl)throw new Error("Valid download URL daalo.");
+    if(!downloadPassword)throw new Error("Download password daalo.");
+
+    if(!isAdmin(auth.currentUser)){
+      throw new Error("Admin login required.");
+    }
+
+    btn.disabled = true;
+    btn.textContent = editingAdultPhotoId ? "Updating..." : "Adding...";
+
+    const isEditing = !!editingAdultPhotoId;
+    const id = editingAdultPhotoId || ("photo_"+Date.now());
+
+    const photoData = {
+      title,
+      imageUrl,
+      downloadUrl,
+      downloadPassword,
+      updatedAt:serverTimestamp()
+    };
+
+    if(!isEditing){
+      photoData.createdAt = serverTimestamp();
+    }
+
+    await setDoc(
+      doc(db,"adultPhotos",id),
+      photoData,
+      {merge:true}
+    );
+
+    clearAdultPhotoForm();
+
+    message(
+      "adultPhotoMessage",
+      isEditing
+        ? "Photo updated successfully!"
+        : "Photo added successfully!"
+    );
+
+    await loadAdultPhotos();
+
+  }catch(error){
+
+    message("adultPhotoMessage","Save failed: "+error.message,"error");
+
+  }finally{
+
+    btn.disabled = false;
+    btn.textContent = editingAdultPhotoId ? "Update Photo" : "Add Photo";
+
+  }
+
 });
- 
+
 /* INITIAL STATUS */
 
 message("loginMessage","Firebase connection starting...");
